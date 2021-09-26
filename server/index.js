@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 //app.use(cors);
 
 app.use('/api/v1/', eegRouter);
-app.use('/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('*', (req, res) => res.status(404).json({ error: 'Not Found' }));
 
 const port = process.env.PORT || 8000;

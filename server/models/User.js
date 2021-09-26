@@ -1,9 +1,8 @@
-import { randomBytes, createHash } from 'crypto';
-import { Schema as _Schema, model } from 'mongoose';
-import { genSalt, hash, compare } from 'bcryptjs';
-const Schema = _Schema;
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-const UserSchema = new _Schema({
+const UserSchema = new mongoose.Schema({
 	username: {
 		type: String,
 		maxlength: [20, 'Username is too long'],
@@ -25,24 +24,23 @@ const UserSchema = new _Schema({
 		maxlength: [64, 'Password is too long'],
 		select: false,
 	},
-	resetPasswordToken: String,
-	resetPaswordExpire: Date,
 });
 
 UserSchema.pre('save', async function (next) {
-	if (!this.isModified('password')) {
-		next();
-	}
-
-	const salt = await genSalt(10);
-	this.password = await hash(this.password, salt);
+	const salt = await bcrypt.genSalt(10);
+	this.password = await bcrypt.hash(this.password, salt);
 	next();
 });
 
 UserSchema.methods.matchPassword = async function (password) {
-	return await compare(password, this.password);
+	return await bcrypt.compare(password, this.password);
 };
 
-const User = model('User', UserSchema);
+UserSchema.methods.getSignedToken = function () {
+	return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+		expiresIn: process.env.JWT_EXPIRE,
+	});
+};
 
+const User = mongoose.model('User', UserSchema);
 export default User;

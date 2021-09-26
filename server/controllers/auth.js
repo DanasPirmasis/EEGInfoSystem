@@ -1,35 +1,35 @@
-import { create, findOne } from '../models/User';
-import ErrorResponse from '../utils/errorResponse';
+import User from '../models/User.js';
+import ErrorResponse from '../utils/errorResponse.js';
 import sanitize from 'mongo-sanitize';
 
-export async function register(req, res, next) {
+export const register = async (req, res, next) => {
 	const username = sanitize(req.body.username);
 	const email = sanitize(req.body.email);
 	const password = sanitize(req.body.password);
 
 	try {
-		const user = await create({
+		const user = await User.create({
 			username,
 			email,
 			password,
 		});
+		console.log('aaa');
+		sendToken(user, 200, res);
 	} catch (error) {
 		next(error);
 	}
-}
+};
 
-export async function login(req, res, next) {
+export const login = async (req, res, next) => {
 	const email = sanitize(req.body.email);
 	const password = sanitize(req.body.password);
 
 	if (!email || !password) {
-		return next(
-			new ErrorResponse('Please provide email and password', 400)
-		);
+		return next(new ErrorResponse('Please provide email and password', 400));
 	}
 
 	try {
-		const user = await findOne({ email }).select('+password');
+		const user = await User.findOne({ email }).select('+password');
 
 		if (!user) {
 			return next(new ErrorResponse('Invalid credentials', 401));
@@ -45,4 +45,9 @@ export async function login(req, res, next) {
 	} catch (error) {
 		res.status(500).json({ success: false, error: error.message });
 	}
-}
+};
+
+const sendToken = (user, statusCode, res) => {
+	const token = user.getSignedToken();
+	res.status(statusCode).json({ success: true, token });
+};
