@@ -1,10 +1,9 @@
-import Channel from './components/Channel';
-
+//import Channel from './components/Channel';
+import Login from './components/Login';
 const App = () => {
 	return (
 		<div>
-			<h1>React app</h1>
-			<Channel></Channel>
+			<Login />
 		</div>
 	);
 };
