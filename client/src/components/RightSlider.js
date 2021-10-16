@@ -1,5 +1,6 @@
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { Avatar } from '@mui/material';
+import { Box } from '@mui/system';
 
 const RightSlider = (props) => {
 	const clickHandler = () => {
@@ -7,12 +8,20 @@ const RightSlider = (props) => {
 	};
 
 	return (
-		<div
+		<Box
+			// style={{
+			// 	position: 'fixed',
+			// 	height: '100%',
+			// 	right: '28vw',
+			// 	borderLeft: 'solid black 1px',
+			// }}
 			style={{
-				position: 'absolute',
-				height: '100%',
-				right: '28vw',
+				display: 'flex',
+				justifyContent: 'flex-end',
 				borderLeft: 'solid black 1px',
+				width: '100px',
+				height: '100vh',
+				paddingRight: '20vw',
 			}}
 		>
 			<Avatar
@@ -25,11 +34,11 @@ const RightSlider = (props) => {
 			>
 				<KeyboardArrowRightIcon
 					style={{ transform: 'scale(1.8)', color: 'black' }}
-					fontSize="large"
+					fontSize='large'
 					onClick={clickHandler}
 				/>
 			</Avatar>
-		</div>
+		</Box>
 	);
 };
 

@@ -3,7 +3,7 @@ import edfdecoder from 'edfdecoder';
 
 export const eeg = async (req, res, next) => {
 	var buffer = fs.readFileSync(
-		'C:/Users/alisa/Desktop/Bakalauras/studentams_v6/0_Suzymeti_Pikai/0_EEG_Piku_Zymejimui/bac 2016.08.16. RE T4 t3.edf'
+		'C:/Users/reyri/Desktop/Bakalauras/studentams_v6/0_Suzymeti_Pikai/0_EEG_Piku_Zymejimui/bac 2016.08.16. RE T4 t3.edf'
 	).buffer;
 
 	var decoder = new edfdecoder.EdfDecoder();
