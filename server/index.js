@@ -10,10 +10,15 @@ connectDB();
 
 const app = express();
 
+app.use(
+	cors({
+		origin: 'http://localhost:3000',
+		methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
+	})
+);
 app.use(express.json({ limit: 1000000 }));
 app.use(express.urlencoded({ extended: false }));
 //Cors makes the server inaccessible
-//app.use(cors);
 
 app.use('/api/v1/', eegRouter);
 app.use('/api/auth', authRoutes);

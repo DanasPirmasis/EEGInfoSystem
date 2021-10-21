@@ -1,8 +1,9 @@
-//import Channel from './components/Channel';
-import Login from './components/Login';
 import { useState } from 'react';
 import UpperToolbar from './components/UpperToolbar';
-import { Collapse } from '@mui/material';
+import Login from './components/Login';
+import Reader from './components/Reader';
+import { Grid } from '@mui/material';
+
 const App = () => {
 	const [loginSliderClicked, setloginSliderClicked] = useState(false);
 
@@ -12,14 +13,15 @@ const App = () => {
 
 	return (
 		<div>
-			<Collapse
-				in={!loginSliderClicked}
-				orientation='horizontal'
-				timeout={2000}
-			>
-				<Login loginSliderHandler={loginSliderHandler} />
-			</Collapse>
-			{loginSliderClicked && <UpperToolbar />}
+			<Grid container direction="row">
+				<Grid item xs={8}>
+					<Reader />
+				</Grid>
+				<Grid item xs={4}>
+					<Login loginSliderHandler={loginSliderHandler} />
+				</Grid>
+			</Grid>
+			<UpperToolbar appear={loginSliderClicked} />
 		</div>
 	);
 };
