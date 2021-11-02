@@ -4,7 +4,11 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const UpperToolbar = (props) => {
 	return (
-		<Fade in={props.appear} timeout={1000}>
+		<Fade
+			in={props.appear}
+			timeout={1000}
+			addEndListener={props.animationFinishedHandler}
+		>
 			<Box sx={{ flexGrow: 1 }}>
 				<AppBar sx={{ backgroundColor: '#121212' }}>
 					<Toolbar>

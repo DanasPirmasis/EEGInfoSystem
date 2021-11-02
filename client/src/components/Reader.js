@@ -1,5 +1,5 @@
 import { Button, Grid } from '@mui/material';
-import { Line } from 'react-chartjs-2';
+import LineChart from './LineChart';
 import Axios from 'axios';
 import { useState } from 'react';
 
@@ -9,17 +9,27 @@ const Reader = () => {
 	const getGraphData = () => {
 		Axios.get('http://localhost:5000/api/v1/')
 			.then((response) => {
-				//console.log(response.data);
-				console.log(Object.values(response.data));
-				console.log(Object.values(response.data).length);
 				setphysicalSignal(Object.values(response.data));
 			})
 			.catch((err) => {
 				console.log(err);
 			});
 	};
-	const a = Array.from(Array(768).keys());
-	console.log(a);
+	const a = Array.from(Array(physicalSignal.length).keys());
+
+	const getTestData = () => {
+		const start = new Date();
+		Axios.get('http://localhost:5000/api/v1/physicalSignals')
+			.then((response) => {
+				console.log(response);
+				const timeTaken = new Date() - start;
+				console.log(timeTaken);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
+
 	return (
 		<Grid
 			container
@@ -27,28 +37,15 @@ const Reader = () => {
 			alignItems="flex-start"
 			justifyContent="flex-start"
 		>
-			<Grid item style={{ marginTop: '150px' }}>
-				Line Chart
-			</Grid>
+			<Grid item>Line Chart</Grid>
 			<Grid item>
-				<Line
-					data={{
-						labels: a,
-						datasets: [
-							{
-								label: 'Physical Signal 0 0',
-								data: physicalSignal,
-								pointStyle: 'line',
-								borderColor: 'red',
-							},
-						],
-					}}
-					height={400}
-					width={1200}
-				></Line>
+				<LineChart data={physicalSignal} labels={a}></LineChart>
 			</Grid>
 			<Grid item>
 				<Button onClick={getGraphData}>Get Data</Button>
+			</Grid>
+			<Grid item>
+				<Button onClick={getTestData}>Get Test Data</Button>
 			</Grid>
 		</Grid>
 	);

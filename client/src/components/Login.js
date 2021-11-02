@@ -1,6 +1,13 @@
-import { Collapse, Grid, TextField, Typography } from '@mui/material';
+import {
+	Button,
+	Collapse,
+	Grid,
+	TextField,
+	Typography,
+	InputAdornment,
+} from '@mui/material';
+import { AccountCircle, LockRounded } from '@mui/icons-material';
 import { useState } from 'react';
-import RightSlider from './RightSlider';
 
 const Login = (props) => {
 	const [loginSliderClicked, setloginSliderClicked] = useState(false);
@@ -19,39 +26,52 @@ const Login = (props) => {
 		>
 			<Grid
 				container
-				spacing={1}
+				display="flex"
+				flexDirection="column"
+				spacing={4}
 				alignContent="center"
 				justifyContent="center"
 				width="40vw"
-				maxHeight="100vh"
+				minHeight="100vh"
+				boxShadow="10px"
 			>
-				<RightSlider onClickHandler={loginSliderHandler} />
-				<div
-					style={{
-						display: 'grid',
-						justifyContent: 'center',
-						alignContent: 'center',
-					}}
-				>
-					<Grid item xs={10}>
-						<Typography variant="h4">EEG WebReader</Typography>
-					</Grid>
-					<Grid item xs={10}>
-						<TextField
-							fullWidth
-							label="Email"
-							variant="standard"
-							margin="normal"
-						></TextField>
-						<TextField
-							fullWidth
-							label="Password"
-							type="password"
-							variant="standard"
-							margin="normal"
-						></TextField>
-					</Grid>
-				</div>
+				<Grid item xs={8}>
+					<Typography variant="h4">EEG WebReader</Typography>
+				</Grid>
+				<Grid item xs={8}>
+					<TextField
+						fullWidth
+						label="Email"
+						variant="standard"
+						margin="normal"
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<AccountCircle />
+								</InputAdornment>
+							),
+						}}
+					></TextField>
+					<TextField
+						fullWidth
+						label="Password"
+						type="password"
+						variant="standard"
+						margin="normal"
+						InputProps={{
+							startAdornment: (
+								<InputAdornment position="start">
+									<LockRounded />
+								</InputAdornment>
+							),
+						}}
+					></TextField>
+
+					<Button variant="contained" onClick={loginSliderHandler}>
+						Login
+					</Button>
+					<Button>Create new account</Button>
+				</Grid>
 			</Grid>
 		</Collapse>
 	);

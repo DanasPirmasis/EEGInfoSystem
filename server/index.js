@@ -18,7 +18,6 @@ app.use(
 );
 app.use(express.json({ limit: 1000000 }));
 app.use(express.urlencoded({ extended: false }));
-//Cors makes the server inaccessible
 
 app.use('/api/v1/', eegRouter);
 app.use('/api/auth', authRoutes);
