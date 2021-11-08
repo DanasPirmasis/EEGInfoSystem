@@ -1,53 +1,40 @@
-import { Button, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import LineChart from './LineChart';
-import Axios from 'axios';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import MontageModal from './MontageModal';
 
-const Reader = () => {
-	const [physicalSignal, setphysicalSignal] = useState('');
+const Reader = (props) => {
+	const [displayedSignals, setDisplayedSignals] = useState('');
+	const [openModal, setOpenModal] = useState(true);
 
-	const getGraphData = () => {
-		Axios.get('http://localhost:5000/api/v1/')
-			.then((response) => {
-				setphysicalSignal(Object.values(response.data));
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+	const handleClose = () => setOpenModal(false);
+
+	const dataHandler = (selectedData) => {
+		setDisplayedSignals(selectedData);
 	};
-	const a = Array.from(Array(physicalSignal.length).keys());
 
-	const getTestData = () => {
-		const start = new Date();
-		Axios.get('http://localhost:5000/api/v1/physicalSignals')
-			.then((response) => {
-				console.log(response);
-				const timeTaken = new Date() - start;
-				console.log(timeTaken);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
+	console.log(props.data._header.signalInfo);
 
 	return (
-		<Grid
-			container
-			spacing={1}
-			alignItems="flex-start"
-			justifyContent="flex-start"
-		>
-			<Grid item>Line Chart</Grid>
-			<Grid item>
-				<LineChart data={physicalSignal} labels={a}></LineChart>
+		<React.Fragment>
+			<Grid
+				container
+				spacing={1}
+				alignItems="flex-start"
+				justifyContent="flex-start"
+				marginTop="64px"
+			>
+				<Grid item>Line Chart</Grid>
+				<Grid item>
+					<LineChart data={displayedSignals}></LineChart>
+				</Grid>
 			</Grid>
-			<Grid item>
-				<Button onClick={getGraphData}>Get Data</Button>
-			</Grid>
-			<Grid item>
-				<Button onClick={getTestData}>Get Test Data</Button>
-			</Grid>
-		</Grid>
+			<MontageModal
+				open={openModal}
+				handleClose={handleClose}
+				signals={props.data._header.signalInfo}
+			/>
+		</React.Fragment>
 	);
 };
 

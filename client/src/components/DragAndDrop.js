@@ -1,16 +1,17 @@
-import Dropzone, { useDropzone } from 'react-dropzone';
-import { useCallback, useMemo } from 'react';
-import edfdecoder from 'edfdecoder';
+import { useDropzone } from 'react-dropzone';
+import { useState, useMemo } from 'react';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import { Fade, Typography } from '@mui/material';
+
+const edfdecoder = require('edfdecoder');
 
 const baseStyle = {
 	flex: 1,
 	display: 'flex',
 	flexDirection: 'column',
 	alignItems: 'center',
-	borderWidth: 2,
-	borderRadius: 2,
-	borderColor: '#eeeeee',
-	borderStyle: 'dashed',
+	justifyContent: 'center',
+	borderRight: 'black solid 2px',
 	backgroundColor: '#545454',
 	color: '#bdbdbd',
 	outline: 'none',
@@ -26,37 +27,55 @@ const acceptStyle = {
 };
 
 const rejectStyle = {
-	borderColor: '#ff1744',
+	backgroundColor: '#ff1744',
 };
 
-const DragAndDrop = () => {
-	// const onDrop = useCallback((acceptedFiles) => {
-	// 	const buffer = acc
+const DragAndDrop = (props) => {
+	const [text, setText] = useState('Drag or click to upload an EDF file');
 
-	//     var decoder = new edfdecoder.EdfDecoder();
-	//     decoder.setInput(buffer);
-	//     decoder.decode();
-	//     var output = decoder.getOutput();
-	// }, []);
+	const onDrop = (acceptedFiles) => {
+		acceptedFiles.forEach((file) => {
+			const reader = new FileReader();
 
-	// const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+			reader.onabort = () => console.log('file reading was aborted');
+			reader.onerror = () => console.log('file reading has failed');
+			reader.onload = () => {
+				const binaryStr = reader.result;
+				const outputFile = decodeEdfFile(binaryStr);
+				props.uploadHandler(outputFile);
+			};
+			reader.readAsArrayBuffer(file);
+		});
+	};
 
 	const {
-		acceptedFiles,
 		getRootProps,
 		getInputProps,
 		isDragActive,
 		isDragAccept,
 		isDragReject,
 	} = useDropzone({
+		onDrop,
 		accept: '.edf',
-		onDrop: (acceptedFiles) => {
-			console.log(acceptedFiles);
-		},
+		maxFiles: 1,
+		maxFileSize: 100,
 		onDropRejected: () => {
-			console.log('file rejected');
+			textHandler();
 		},
 	});
+
+	const decodeEdfFile = (file) => {
+		try {
+			const decoder = new edfdecoder.EdfDecoder();
+			decoder.setInput(file);
+			decoder.decode();
+			const output = decoder.getOutput();
+			console.log(output);
+			return output;
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	const style = useMemo(
 		() => ({
@@ -68,21 +87,32 @@ const DragAndDrop = () => {
 		[isDragActive, isDragReject, isDragAccept]
 	);
 
-	const files = acceptedFiles.map((file) => (
-		<li key={file.path}>
-			{file.path} - {file.size} bytes
-		</li>
-	));
+	const textHandler = async () => {
+		setText('Unsupported file type');
+		await new Promise((resolve) => setTimeout(resolve, 3000));
+		setText('Drag or click to upload an EDF file');
+	};
 
 	return (
-		<section
-			style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
+		<Fade
+			in={props.appear}
+			timeout={{ enter: 0, exit: 200 }}
+			unmountOnExit={true}
 		>
-			<div {...getRootProps({ style })}>
-				<input {...getInputProps()} />
-				<p>Drag 'n' drop some files here, or click to select files</p>
-			</div>
-		</section>
+			<section
+				style={{
+					display: 'flex',
+					flexDirection: 'row',
+					minHeight: '100vh',
+				}}
+			>
+				<div {...getRootProps({ style })}>
+					<input {...getInputProps()} />
+					<FileUploadIcon fontSize="large" />
+					<Typography>{text}</Typography>
+				</div>
+			</section>
+		</Fade>
 	);
 };
 

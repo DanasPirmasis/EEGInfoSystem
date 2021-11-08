@@ -31,7 +31,7 @@ const LineChart = (props) => {
 	svg.append('g').call(d3.axisLeft(y));
 	let testObj = [];
 
-	for (let i = 0; i < props.labels.length; i++) {
+	for (let i = 0; i < props.data.length; i++) {
 		testObj.push({ data: props.data[i], label: i });
 	}
 	console.log(testObj);

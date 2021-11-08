@@ -1,37 +1,32 @@
 import {
 	Button,
-	Collapse,
 	Grid,
 	TextField,
 	Typography,
 	InputAdornment,
+	Fade,
 } from '@mui/material';
 import { AccountCircle, LockRounded } from '@mui/icons-material';
-import { useState } from 'react';
 
 const Login = (props) => {
-	const [loginSliderClicked, setloginSliderClicked] = useState(false);
-
 	const loginSliderHandler = () => {
-		setloginSliderClicked(true);
 		props.loginSliderHandler();
 	};
 
 	return (
-		<Collapse
-			sx={{ float: 'right' }}
-			in={!loginSliderClicked}
-			orientation="horizontal"
-			timeout={700}
+		<Fade
+			in={props.appear}
+			timeout={{ enter: 0, exit: 200 }}
+			unmountOnExit={true}
 		>
 			<Grid
 				container
 				display="flex"
 				flexDirection="column"
-				spacing={4}
+				spacing={1}
 				alignContent="center"
 				justifyContent="center"
-				width="40vw"
+				width="35vw"
 				minHeight="100vh"
 				boxShadow="10px"
 			>
@@ -67,13 +62,19 @@ const Login = (props) => {
 						}}
 					></TextField>
 
-					<Button variant="contained" onClick={loginSliderHandler}>
+					<Button
+						sx={{ marginTop: '20px' }}
+						variant="contained"
+						onClick={loginSliderHandler}
+					>
 						Login
 					</Button>
-					<Button>Create new account</Button>
+					<Button sx={{ marginTop: '20px', marginLeft: '20px' }}>
+						Create new account
+					</Button>
 				</Grid>
 			</Grid>
-		</Collapse>
+		</Fade>
 	);
 };
 

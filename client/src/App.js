@@ -6,35 +6,33 @@ import { Grid } from '@mui/material';
 import DragAndDrop from './components/DragAndDrop';
 
 const App = () => {
-	const [loginSliderClicked, setLoginSliderClicked] = useState(false);
-	const [animationFinished, setAnimationFinished] = useState(false);
+	const [nextScreen, setNextScreen] = useState(false);
+	const [edfFile, setEdfFile] = useState([]);
 
-	const loginSliderHandler = () => {
-		setLoginSliderClicked(true);
+	const fadeToNextScreen = () => {
+		setNextScreen(true);
 	};
 
-	const animationFinishedHandler = async () => {
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-		setAnimationFinished(true);
+	const uploadHandler = (file) => {
+		setEdfFile(file);
+		setNextScreen(true);
 	};
-
+	//TODO: Make it so that UpperToolbar and Reader components only mount after the others unmount
 	return (
 		<div>
-			<UpperToolbar
-				appear={loginSliderClicked}
-				animationFinishedHandler={animationFinishedHandler}
-			/>
 			<Grid container direction="row">
-				<Grid item xs={animationFinished ? 12 : 8}>
-					{animationFinished && <Reader marginTop="65px" />}
-					{!animationFinished && <DragAndDrop />}
+				<Grid item sx={{ flexGrow: 1 }}>
+					<DragAndDrop appear={!nextScreen} uploadHandler={uploadHandler} />
 				</Grid>
-				{!animationFinished && (
-					<Grid item xs={4}>
-						<Login loginSliderHandler={loginSliderHandler} />
-					</Grid>
-				)}
+				<Grid item>
+					<Login
+						appear={!nextScreen}
+						loginSliderHandler={fadeToNextScreen}
+					></Login>
+				</Grid>
 			</Grid>
+			<UpperToolbar appear={nextScreen} />
+			{nextScreen && <Reader data={edfFile} />}
 		</div>
 	);
 };
