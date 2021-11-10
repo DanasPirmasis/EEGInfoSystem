@@ -2,6 +2,7 @@ import { Grid } from '@mui/material';
 import LineChart from './LineChart';
 import React, { useState } from 'react';
 import MontageModal from './MontageModal';
+import ZoomableLineChart from './ZoomableLineChart';
 
 const Reader = (props) => {
 	const [displayedSignals, setDisplayedSignals] = useState('');
@@ -10,10 +11,30 @@ const Reader = (props) => {
 	const handleClose = () => setOpenModal(false);
 
 	const dataHandler = (selectedData) => {
+		console.log(selectedData);
 		setDisplayedSignals(selectedData);
 	};
+	const testData = Array.from({ length: 750 }, () =>
+		Math.round(Math.random() * 100)
+	);
 
-	console.log(props.data._header.signalInfo);
+	console.log(testData);
+	//console.log(props.data._header.signalInfo);
+	//console.log(props.data._physicalSignals[0]);
+	//let flatArray = props.data._physicalSignals[0].flat(Infinity);
+	const arr = props.data._physicalSignals[0];
+	//console.log(flat(arr));
+
+	function flat(input) {
+		let a = [];
+		for (let i = 0; i < input.length / 12; i++) {
+			for (let j = 0; j < input[i].length; j++) {
+				a.push(input[i][j]);
+			}
+		}
+
+		return a;
+	}
 
 	return (
 		<React.Fragment>
@@ -24,15 +45,16 @@ const Reader = (props) => {
 				justifyContent="flex-start"
 				marginTop="64px"
 			>
-				<Grid item>Line Chart</Grid>
-				<Grid item>
-					<LineChart data={displayedSignals}></LineChart>
+				<Grid item sx={{ flexGrow: 1 }}>
+					{/* <LineChart data={displayedSignals}></LineChart> */}
+					<ZoomableLineChart data={flat(arr)} />
 				</Grid>
 			</Grid>
 			<MontageModal
 				open={openModal}
 				handleClose={handleClose}
 				signals={props.data._header.signalInfo}
+				chosenSignals={dataHandler}
 			/>
 		</React.Fragment>
 	);

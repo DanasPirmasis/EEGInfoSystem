@@ -2,10 +2,14 @@ import { Modal, Typography, Box, Button } from '@mui/material';
 import { useState } from 'react';
 
 const MontageModal = (props) => {
-	//const [selectedSignals, setselectedSignals] = useState([]);
+	const [selectedSignals, setselectedSignals] = useState([]);
 
 	const selectSignal = (e) => {
 		console.log(e.target.innerText);
+		setselectedSignals((selectedSignals) => [
+			...selectedSignals,
+			<li>{e.target.innerText}</li>,
+		]);
 	};
 
 	return (
@@ -84,7 +88,7 @@ const MontageModal = (props) => {
 							border: '1px solid black',
 						}}
 					>
-						huh
+						{selectedSignals}
 					</div>
 				</div>
 			</Box>
