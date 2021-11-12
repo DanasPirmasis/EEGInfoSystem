@@ -14,25 +14,27 @@ const Reader = (props) => {
 		console.log(selectedData);
 		setDisplayedSignals(selectedData);
 	};
-	const testData = Array.from({ length: 750 }, () =>
+
+	const testData = Array.from({ length: 3924 }, () =>
 		Math.round(Math.random() * 100)
 	);
-
-	console.log(testData);
 	//console.log(props.data._header.signalInfo);
 	//console.log(props.data._physicalSignals[0]);
 	//let flatArray = props.data._physicalSignals[0].flat(Infinity);
 	const arr = props.data._physicalSignals[0];
+	console.log(props.data);
 	//console.log(flat(arr));
 
 	function flat(input) {
 		let a = [];
-		for (let i = 0; i < input.length / 12; i++) {
+
+		for (let i = 0; i < 1; i++) {
 			for (let j = 0; j < input[i].length; j++) {
-				a.push(input[i][j]);
+				if (a.length < 3924) {
+					a.push(input[i][j]);
+				}
 			}
 		}
-
 		return a;
 	}
 
