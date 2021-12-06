@@ -2,15 +2,23 @@ import { Modal, Typography, Box, Button } from '@mui/material';
 import { useState } from 'react';
 
 const MontageModal = (props) => {
-	const [selectedSignals, setselectedSignals] = useState([]);
+	const [selectedSignals, setSelectedSignals] = useState([]);
+	//const [currentSelectedSignal, setCurrentSelectedSignal] = useState([]);
 
-	const selectSignal = (e) => {
-		console.log(e.target.innerText);
-		setselectedSignals((selectedSignals) => [
+	const selectSignal = async (e) => {
+		setSelectedSignals((selectedSignals) => [
 			...selectedSignals,
-			<li>{e.target.innerText}</li>,
+			<li style={{ listStyleType: 'none', minWidth: '7.5vw' }}>
+				<Button onClick={removeSignal} style={{ minWidth: '7.5vw' }}>
+					{e.target.innerText}
+				</Button>
+			</li>,
 		]);
+		console.log(selectedSignals);
 	};
+	// Instead of adding elements to the state we can use a map function that for each text value adds an element
+	// And in the selectSignal function it should just be adding the innerText value to selectedSignalsState
+	const removeSignal = () => {};
 
 	return (
 		<Modal
@@ -53,8 +61,7 @@ const MontageModal = (props) => {
 				<div
 					style={{
 						display: 'flex',
-						flexDirection: 'row',
-						alignItems: 'flex-start',
+						flexWrap: 'wrap',
 						justifyContent: 'space-between',
 					}}
 				>
@@ -64,19 +71,20 @@ const MontageModal = (props) => {
 							flexWrap: 'wrap',
 							flexDirection: 'column',
 							maxHeight: '75vh',
+							maxWidth: '15vw',
+							minWidth: '15vw',
 							border: '1px solid black',
 							borderBottomWidth: '0px',
 							borderLeftWidth: '0px',
-							minWidth: '12vw',
 							overflow: 'auto',
 						}}
 					>
 						{props.signals.map((signal) => (
-							<li style={{ listStyleType: 'none' }} key={signal.label}>
-								<Button
-									onClick={selectSignal}
-									sx={{ padding: '3px', flexGrow: 1 }}
-								>
+							<li
+								style={{ listStyleType: 'none', maxWidth: '7vw' }}
+								key={signal.label}
+							>
+								<Button onClick={selectSignal} style={{ minWidth: '7vw' }}>
 									{signal.label}
 								</Button>
 							</li>
@@ -85,7 +93,13 @@ const MontageModal = (props) => {
 					<div
 						style={{
 							display: 'flex',
+							flexDirection: 'row',
+							flexWrap: 'wrap',
 							border: '1px solid black',
+							minWidth: '15vw',
+							maxWidth: '15vw',
+							justifyContent: 'flex-start',
+							alignContent: 'flex-start',
 						}}
 					>
 						{selectedSignals}

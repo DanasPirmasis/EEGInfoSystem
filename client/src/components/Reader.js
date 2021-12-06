@@ -28,9 +28,9 @@ const Reader = (props) => {
 	function flat(input) {
 		let a = [];
 
-		for (let i = 0; i < 1; i++) {
+		for (let i = 0; i < input.length; i++) {
 			for (let j = 0; j < input[i].length; j++) {
-				if (a.length < 3924) {
+				if (a.length < 1000) {
 					a.push(input[i][j]);
 				}
 			}
