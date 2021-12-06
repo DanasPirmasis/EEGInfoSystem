@@ -3,27 +3,46 @@ import { useState } from 'react';
 
 const MontageModal = (props) => {
 	const [selectedSignals, setSelectedSignals] = useState([]);
-	//const [currentSelectedSignal, setCurrentSelectedSignal] = useState([]);
-
+	const [selectedSignalsLength, setSelectedSignalsLength] = useState(0);
+	//Weird solution probably should fix it LOL!
+	//selectSignal and removeSignal probably have lots of spaghet, this logic should be revisited!
 	const selectSignal = async (e) => {
-		setSelectedSignals((selectedSignals) => [
-			...selectedSignals,
-			<li style={{ listStyleType: 'none', minWidth: '7.5vw' }}>
-				<Button onClick={removeSignal} style={{ minWidth: '7.5vw' }}>
-					{e.target.innerText}
-				</Button>
-			</li>,
-		]);
-		console.log(selectedSignals);
+		if (selectedSignalsLength === 0 || selectedSignalsLength % 2 === 0) {
+			setSelectedSignals((selectedSignals) => [
+				...selectedSignals,
+				e.target.innerText,
+			]);
+		} else {
+			const swapArray = selectedSignals;
+			swapArray[swapArray.length - 1] =
+				swapArray[swapArray.length - 1] + ' - ' + e.target.innerText;
+			setSelectedSignals(swapArray);
+		}
+
+		const val = selectedSignalsLength + 1;
+		setSelectedSignalsLength(val);
 	};
-	// Instead of adding elements to the state we can use a map function that for each text value adds an element
-	// And in the selectSignal function it should just be adding the innerText value to selectedSignalsState
-	const removeSignal = () => {};
+
+	const removeSignal = (i) => {
+		let lengthReducer = selectedSignalsLength - 1;
+		const swapArray = [...selectedSignals];
+		if (swapArray[i].includes(' - ')) {
+			console.log('reducd by two');
+			lengthReducer--;
+		}
+		swapArray.splice(i, 1);
+		setSelectedSignals(swapArray);
+		setSelectedSignalsLength(lengthReducer);
+	};
+
+	const closeHandler = () => {
+		props.handleClose(selectedSignals);
+	};
 
 	return (
 		<Modal
 			open={props.open}
-			onClose={props.handleClose}
+			onClose={closeHandler}
 			aria-labelledby="modal-modal-title"
 			aria-describedby="modal-modal-description"
 			style={{
@@ -102,7 +121,22 @@ const MontageModal = (props) => {
 							alignContent: 'flex-start',
 						}}
 					>
-						{selectedSignals}
+						{selectedSignals.map((signal, i) => (
+							<li
+								style={{ listStyleType: 'none', minWidth: '15vw', key: { i } }}
+							>
+								<Button
+									onClick={(e) => {
+										e.stopPropagation();
+										e.preventDefault();
+										removeSignal(i);
+									}}
+									style={{ minWidth: '15vw' }}
+								>
+									{signal}
+								</Button>
+							</li>
+						))}
 					</div>
 				</div>
 			</Box>
