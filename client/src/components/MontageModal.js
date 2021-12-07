@@ -27,7 +27,6 @@ const MontageModal = (props) => {
 		let lengthReducer = selectedSignalsLength - 1;
 		const swapArray = [...selectedSignals];
 		if (swapArray[i].includes(' - ')) {
-			console.log('reducd by two');
 			lengthReducer--;
 		}
 		swapArray.splice(i, 1);

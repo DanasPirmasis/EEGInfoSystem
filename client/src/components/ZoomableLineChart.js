@@ -16,7 +16,6 @@ const ZoomableLineChart = (props) => {
 	const svgRef = useRef();
 	const wrapperRef = useRef();
 	const dimensions = useResizeObserver(wrapperRef);
-	let test = props.data;
 	const [currentZoomState, setCurrentZoomState] = useState();
 
 	useEffect(() => {
@@ -24,16 +23,17 @@ const ZoomableLineChart = (props) => {
 		const svgContent = svg.select('.content');
 		const { width, height } =
 			dimensions || wrapperRef.current.getBoundingClientRect();
-
 		const xScale = scaleLinear()
-			.domain([0, test.length - 1])
+			.domain([0, props.data.length - 1])
 			.range([0, width]);
+
 		if (currentZoomState) {
 			const newXScale = currentZoomState.rescaleX(xScale);
 			xScale.domain(newXScale.domain());
 		}
+
 		const yScale = scaleLinear()
-			.domain([min(test), max(test)])
+			.domain([min(props.data), max(props.data)])
 			.range([height, 10]);
 
 		const lineGenerator = line()
@@ -43,7 +43,7 @@ const ZoomableLineChart = (props) => {
 		// render the line
 		svgContent
 			.selectAll('.myLine')
-			.data([test])
+			.data([props.data])
 			.join('path')
 			.attr('class', 'myLine')
 			.attr('stroke', 'steelblue')
@@ -63,7 +63,7 @@ const ZoomableLineChart = (props) => {
 
 		// zoom
 		const zoomBehavior = zoom()
-			.scaleExtent([1, 10])
+			.scaleExtent([10, 100])
 			.translateExtent([
 				[0, 0],
 				[width, height],
@@ -74,7 +74,7 @@ const ZoomableLineChart = (props) => {
 			});
 
 		svg.call(zoomBehavior);
-	}, [currentZoomState, test, dimensions]);
+	}, [currentZoomState, props.data, dimensions]);
 
 	return (
 		<React.Fragment>
