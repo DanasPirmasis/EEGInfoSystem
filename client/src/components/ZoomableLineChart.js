@@ -9,6 +9,7 @@ import {
 	axisBottom,
 	axisLeft,
 	zoom,
+	drag,
 } from 'd3';
 import './TestChart.css';
 
@@ -17,15 +18,53 @@ const ZoomableLineChart = (props) => {
 	const wrapperRef = useRef();
 	const dimensions = useResizeObserver(wrapperRef);
 	const [currentZoomState, setCurrentZoomState] = useState();
+	const [selectedDataRange, setSelectedDataRange] = useState([0, 1000]);
+	const [selectedData, setSelectedData] = useState(props.data.slice(0, 1000));
 
+	// const dataUpdater = () => {
+	// 	if (currentZoomState) {
+	// 		//console.log(props.data);
+	// 		//console.log({ selectedData });
+	// 		const { width } =
+	// 			dimensions || wrapperRef.current.getBoundingClientRect();
+	// 		let valuesToWidthZoomRatio =
+	// 			selectedData.length / (width * (currentZoomState.k - 1));
+
+	// 		if (valuesToWidthZoomRatio < 1) valuesToWidthZoomRatio += 1;
+
+	// 		let startValue = Math.abs(
+	// 			Math.ceil(currentZoomState.x / valuesToWidthZoomRatio)
+	// 		);
+	// 		let endValue = startValue + 1000;
+	// 		// console.log({ valuesToWidthZoomRatio });
+	// 		// console.log({ currentZoomState });
+	// 		// console.log({ startValue });
+	// 		// console.log({ endValue });
+	// 		setSelectedDataRange([startValue, endValue]);
+	// 		setSelectedData(props.data.slice(startValue, endValue));
+	// 	}
+	// };
+	//data should always show 1k data points, aka be stable and not fuck up when zooming and start showing too few
+	// const flattenAndSubtract = (firstSignal, secondSignal) => {
+	// 	let firstSignalData = props.data._physicalSignals[firstSignal];
+	// 	let secondSignalData = props.data._physicalSignals[secondSignal];
+	// 	let derivation = [];
+
+	// 	for (let i = 0; i < firstSignalData.length; i++) {
+	// 		for (let j = 0; j < firstSignalData[i].length; j++) {
+	// 			derivation.push(secondSignalData[i][j] - firstSignalData[i][j]);
+	// 		}
+	// 	}
+	// 	console.log(derivation);
+	// 	return derivation;
+	// };
 	useEffect(() => {
+		//console.log(selectedDataRange);
 		const svg = select(svgRef.current);
 		const svgContent = svg.select('.content');
 		const { width, height } =
 			dimensions || wrapperRef.current.getBoundingClientRect();
-		const xScale = scaleLinear()
-			.domain([0, props.data.length - 1])
-			.range([0, width]);
+		const xScale = scaleLinear().domain(selectedDataRange).range([0, width]);
 
 		if (currentZoomState) {
 			const newXScale = currentZoomState.rescaleX(xScale);
@@ -33,7 +72,7 @@ const ZoomableLineChart = (props) => {
 		}
 
 		const yScale = scaleLinear()
-			.domain([min(props.data), max(props.data)])
+			.domain([min(selectedData), max(selectedData)])
 			.range([height, 10]);
 
 		const lineGenerator = line()
@@ -43,7 +82,7 @@ const ZoomableLineChart = (props) => {
 		// render the line
 		svgContent
 			.selectAll('.myLine')
-			.data([props.data])
+			.data([selectedData])
 			.join('path')
 			.attr('class', 'myLine')
 			.attr('stroke', 'steelblue')
@@ -63,7 +102,7 @@ const ZoomableLineChart = (props) => {
 
 		// zoom
 		const zoomBehavior = zoom()
-			.scaleExtent([10, 100])
+			.scaleExtent([1, 100])
 			.translateExtent([
 				[0, 0],
 				[width, height],
@@ -71,10 +110,38 @@ const ZoomableLineChart = (props) => {
 			.on('zoom', (event) => {
 				const zoomState = event.transform;
 				setCurrentZoomState(zoomState);
+				//console.log(props.data);
+				//console.log({ selectedData });
+				const { width } =
+					dimensions || wrapperRef.current.getBoundingClientRect();
+				let valuesToWidthZoomRatio =
+					selectedData.length / (width * (currentZoomState.k - 1));
+
+				if (valuesToWidthZoomRatio < 1) valuesToWidthZoomRatio += 1;
+
+				let startValue = Math.abs(
+					Math.ceil(currentZoomState.x / valuesToWidthZoomRatio)
+				);
+				let endValue = startValue + 1000;
+				// console.log({ valuesToWidthZoomRatio });
+				// console.log({ currentZoomState });
+				// console.log({ startValue });
+				// console.log({ endValue });
+				setSelectedDataRange([0, endValue]);
+				setSelectedData(props.data.slice(0, endValue));
+				//console.log(selectedData);
 			});
 
+		// const dragBehavior = drag()
+		// 	.origin(() => {
+		// 		return { x: 0, y: 0 };
+		// 	})
+		// 	.on('drag', dragmove)
+		// 	.on('dragstart', dragstart)
+		// 	.on('dragend', dragend);
+
 		svg.call(zoomBehavior);
-	}, [currentZoomState, props.data, dimensions]);
+	}, [currentZoomState, dimensions]);
 
 	return (
 		<React.Fragment>
