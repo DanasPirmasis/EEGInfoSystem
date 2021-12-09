@@ -18,8 +18,7 @@ const ZoomableLineChart = (props) => {
 	const wrapperRef = useRef();
 	const dimensions = useResizeObserver(wrapperRef);
 	const [currentZoomState, setCurrentZoomState] = useState();
-	const [selectedDataRange, setSelectedDataRange] = useState([0, 1000]);
-	const [selectedData, setSelectedData] = useState(props.data.slice(0, 1000));
+	const [selectedData, setSelectedData] = useState(props.data.slice(0, 2000));
 
 	// const dataUpdater = () => {
 	// 	if (currentZoomState) {
@@ -27,19 +26,19 @@ const ZoomableLineChart = (props) => {
 	// 		//console.log({ selectedData });
 	// 		const { width } =
 	// 			dimensions || wrapperRef.current.getBoundingClientRect();
-	// 		let valuesToWidthZoomRatio =
-	// 			selectedData.length / (width * (currentZoomState.k - 1));
+	// let valuesToWidthZoomRatio =
+	// 	selectedData.length / (width * (currentZoomState.k - 1));
 
-	// 		if (valuesToWidthZoomRatio < 1) valuesToWidthZoomRatio += 1;
+	// if (valuesToWidthZoomRatio < 1) valuesToWidthZoomRatio += 1;
 
-	// 		let startValue = Math.abs(
-	// 			Math.ceil(currentZoomState.x / valuesToWidthZoomRatio)
-	// 		);
-	// 		let endValue = startValue + 1000;
-	// 		// console.log({ valuesToWidthZoomRatio });
-	// 		// console.log({ currentZoomState });
-	// 		// console.log({ startValue });
-	// 		// console.log({ endValue });
+	// let startValue = Math.abs(
+	// 	Math.ceil(currentZoomState.x / valuesToWidthZoomRatio)
+	// );
+	// let endValue = startValue + 1000;
+	// console.log({ valuesToWidthZoomRatio });
+	// console.log({ currentZoomState });
+	// console.log({ startValue });
+	// console.log({ endValue });
 	// 		setSelectedDataRange([startValue, endValue]);
 	// 		setSelectedData(props.data.slice(startValue, endValue));
 	// 	}
@@ -59,12 +58,11 @@ const ZoomableLineChart = (props) => {
 	// 	return derivation;
 	// };
 	useEffect(() => {
-		//console.log(selectedDataRange);
 		const svg = select(svgRef.current);
 		const svgContent = svg.select('.content');
 		const { width, height } =
 			dimensions || wrapperRef.current.getBoundingClientRect();
-		const xScale = scaleLinear().domain(selectedDataRange).range([0, width]);
+		const xScale = scaleLinear().domain([0, 1000]).range([0, width]);
 
 		if (currentZoomState) {
 			const newXScale = currentZoomState.rescaleX(xScale);
@@ -105,43 +103,35 @@ const ZoomableLineChart = (props) => {
 			.scaleExtent([1, 100])
 			.translateExtent([
 				[0, 0],
-				[width, height],
+				[props.data.length, height],
 			])
 			.on('zoom', (event) => {
+				//console.log(event.transform);
 				const zoomState = event.transform;
-				setCurrentZoomState(zoomState);
-				//console.log(props.data);
-				//console.log({ selectedData });
-				const { width } =
-					dimensions || wrapperRef.current.getBoundingClientRect();
-				let valuesToWidthZoomRatio =
-					selectedData.length / (width * (currentZoomState.k - 1));
+				let valuesToWidthZoomRatio;
+				if (zoomState.k === 1) {
+					valuesToWidthZoomRatio = 1;
+				} else {
+					valuesToWidthZoomRatio =
+						selectedData.length / (width * (zoomState.k - 1));
 
-				if (valuesToWidthZoomRatio < 1) valuesToWidthZoomRatio += 1;
+					if (valuesToWidthZoomRatio < 1) valuesToWidthZoomRatio += 1;
+				}
 
-				let startValue = Math.abs(
-					Math.ceil(currentZoomState.x / valuesToWidthZoomRatio)
-				);
-				let endValue = startValue + 1000;
+				let startValue = Math.abs(zoomState.x) / 1000;
+				let endValue = startValue * 1000 + 1000;
+
 				// console.log({ valuesToWidthZoomRatio });
-				// console.log({ currentZoomState });
-				// console.log({ startValue });
-				// console.log({ endValue });
-				setSelectedDataRange([0, endValue]);
-				setSelectedData(props.data.slice(0, endValue));
-				//console.log(selectedData);
+				// console.log({ zoomState });
+				// console.log(startValue * 1000);
+				// console.log(endValue);
+
+				setCurrentZoomState(zoomState);
+				setSelectedData(props.data.slice(startValue, endValue));
+				console.log(selectedData.length);
 			});
-
-		// const dragBehavior = drag()
-		// 	.origin(() => {
-		// 		return { x: 0, y: 0 };
-		// 	})
-		// 	.on('drag', dragmove)
-		// 	.on('dragstart', dragstart)
-		// 	.on('dragend', dragend);
-
 		svg.call(zoomBehavior);
-	}, [currentZoomState, dimensions]);
+	}, [currentZoomState, selectedData, dimensions]);
 
 	return (
 		<React.Fragment>
