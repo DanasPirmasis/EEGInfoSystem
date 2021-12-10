@@ -10,7 +10,7 @@ import {
 	axisLeft,
 	zoom,
 } from 'd3';
-import Draggable from 'react-draggable';
+
 import './TestChart.css';
 
 const ZoomableLineChart = (props) => {
@@ -18,9 +18,10 @@ const ZoomableLineChart = (props) => {
 	const wrapperRef = useRef();
 	const dimensions = useResizeObserver(wrapperRef);
 	const [currentZoomState, setCurrentZoomState] = useState();
-	const [selectedData, setSelectedData] = useState(props.data.slice(0, 1000));
+	const [selectedData, setSelectedData] = useState(props.data);
 
 	useEffect(() => {
+		setSelectedData(props.data);
 		const svg = select(svgRef.current);
 		const svgContent = svg.select('.content');
 		const { width, height } =
@@ -32,9 +33,7 @@ const ZoomableLineChart = (props) => {
 			xScale.domain(newXScale.domain());
 		}
 
-		const yScale = scaleLinear()
-			.domain([min(selectedData), max(selectedData)])
-			.range([height, 10]);
+		const yScale = scaleLinear().domain([-1000, 1000]).range([height, 10]);
 
 		const lineGenerator = line()
 			.x((d, index) => xScale(index))
@@ -73,47 +72,10 @@ const ZoomableLineChart = (props) => {
 				setCurrentZoomState(zoomState);
 			});
 		svg.call(zoomBehavior);
-	}, [currentZoomState, selectedData, dimensions]);
-
-	const changeValues = (e, data) => {
-		const x = data.x;
-		let ratio = props.data.length / 1300;
-		let startValue = x * ratio;
-		let endValue = startValue + 1000;
-		if (endValue > props.data.length) endValue = props.data.length;
-		setSelectedData(props.data.slice(startValue, endValue));
-	};
+	}, [currentZoomState, dimensions, props.data, selectedData]);
 
 	return (
 		<React.Fragment>
-			<div
-				style={{
-					margin: 'auto',
-					border: '1px solid black',
-					height: '12px',
-					width: '99%',
-				}}
-			>
-				<Draggable
-					axis="x"
-					handle=".handle"
-					defaultPosition={{ x: 0, y: 0 }}
-					position={null}
-					scale={1}
-					onDrag={(e, data) => changeValues(e, data)}
-					bounds={{ right: 1300, left: 0 }}
-				>
-					<div
-						className="handle"
-						style={{
-							paddingTop: '2px',
-							backgroundColor: 'blueviolet',
-							height: '10px',
-							width: '10px',
-						}}
-					/>
-				</Draggable>
-			</div>
 			<div ref={wrapperRef} className={'svgDiv'}>
 				<svg className={'svg1'} ref={svgRef}>
 					<defs>
