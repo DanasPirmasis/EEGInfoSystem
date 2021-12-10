@@ -9,8 +9,8 @@ import {
 	axisBottom,
 	axisLeft,
 	zoom,
-	drag,
 } from 'd3';
+import Draggable from 'react-draggable';
 import './TestChart.css';
 
 const ZoomableLineChart = (props) => {
@@ -18,45 +18,8 @@ const ZoomableLineChart = (props) => {
 	const wrapperRef = useRef();
 	const dimensions = useResizeObserver(wrapperRef);
 	const [currentZoomState, setCurrentZoomState] = useState();
-	const [selectedData, setSelectedData] = useState(props.data.slice(0, 2000));
+	const [selectedData, setSelectedData] = useState(props.data.slice(0, 1000));
 
-	// const dataUpdater = () => {
-	// 	if (currentZoomState) {
-	// 		//console.log(props.data);
-	// 		//console.log({ selectedData });
-	// 		const { width } =
-	// 			dimensions || wrapperRef.current.getBoundingClientRect();
-	// let valuesToWidthZoomRatio =
-	// 	selectedData.length / (width * (currentZoomState.k - 1));
-
-	// if (valuesToWidthZoomRatio < 1) valuesToWidthZoomRatio += 1;
-
-	// let startValue = Math.abs(
-	// 	Math.ceil(currentZoomState.x / valuesToWidthZoomRatio)
-	// );
-	// let endValue = startValue + 1000;
-	// console.log({ valuesToWidthZoomRatio });
-	// console.log({ currentZoomState });
-	// console.log({ startValue });
-	// console.log({ endValue });
-	// 		setSelectedDataRange([startValue, endValue]);
-	// 		setSelectedData(props.data.slice(startValue, endValue));
-	// 	}
-	// };
-	//data should always show 1k data points, aka be stable and not fuck up when zooming and start showing too few
-	// const flattenAndSubtract = (firstSignal, secondSignal) => {
-	// 	let firstSignalData = props.data._physicalSignals[firstSignal];
-	// 	let secondSignalData = props.data._physicalSignals[secondSignal];
-	// 	let derivation = [];
-
-	// 	for (let i = 0; i < firstSignalData.length; i++) {
-	// 		for (let j = 0; j < firstSignalData[i].length; j++) {
-	// 			derivation.push(secondSignalData[i][j] - firstSignalData[i][j]);
-	// 		}
-	// 	}
-	// 	console.log(derivation);
-	// 	return derivation;
-	// };
 	useEffect(() => {
 		const svg = select(svgRef.current);
 		const svgContent = svg.select('.content');
@@ -103,38 +66,54 @@ const ZoomableLineChart = (props) => {
 			.scaleExtent([1, 100])
 			.translateExtent([
 				[0, 0],
-				[props.data.length, height],
+				[width, height],
 			])
 			.on('zoom', (event) => {
-				//console.log(event.transform);
 				const zoomState = event.transform;
-				let valuesToWidthZoomRatio;
-				if (zoomState.k === 1) {
-					valuesToWidthZoomRatio = 1;
-				} else {
-					valuesToWidthZoomRatio =
-						selectedData.length / (width * (zoomState.k - 1));
-
-					if (valuesToWidthZoomRatio < 1) valuesToWidthZoomRatio += 1;
-				}
-
-				let startValue = Math.abs(zoomState.x) / 1000;
-				let endValue = startValue * 1000 + 1000;
-
-				// console.log({ valuesToWidthZoomRatio });
-				// console.log({ zoomState });
-				// console.log(startValue * 1000);
-				// console.log(endValue);
-
 				setCurrentZoomState(zoomState);
-				setSelectedData(props.data.slice(startValue, endValue));
-				console.log(selectedData.length);
 			});
 		svg.call(zoomBehavior);
 	}, [currentZoomState, selectedData, dimensions]);
 
+	const changeValues = (e, data) => {
+		const x = data.x;
+		let ratio = props.data.length / 1300;
+		let startValue = x * ratio;
+		let endValue = startValue + 1000;
+		if (endValue > props.data.length) endValue = props.data.length;
+		setSelectedData(props.data.slice(startValue, endValue));
+	};
+
 	return (
 		<React.Fragment>
+			<div
+				style={{
+					margin: 'auto',
+					border: '1px solid black',
+					height: '12px',
+					width: '99%',
+				}}
+			>
+				<Draggable
+					axis="x"
+					handle=".handle"
+					defaultPosition={{ x: 0, y: 0 }}
+					position={null}
+					scale={1}
+					onDrag={(e, data) => changeValues(e, data)}
+					bounds={{ right: 1300, left: 0 }}
+				>
+					<div
+						className="handle"
+						style={{
+							paddingTop: '2px',
+							backgroundColor: 'blueviolet',
+							height: '10px',
+							width: '10px',
+						}}
+					/>
+				</Draggable>
+			</div>
 			<div ref={wrapperRef} className={'svgDiv'}>
 				<svg className={'svg1'} ref={svgRef}>
 					<defs>
