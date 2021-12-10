@@ -28,12 +28,14 @@ const ZoomableLineChart = (props) => {
 			dimensions || wrapperRef.current.getBoundingClientRect();
 		const xScale = scaleLinear().domain([0, 1000]).range([0, width]);
 
-		if (currentZoomState) {
-			const newXScale = currentZoomState.rescaleX(xScale);
-			xScale.domain(newXScale.domain());
-		}
-
 		const yScale = scaleLinear().domain([-1000, 1000]).range([height, 10]);
+
+		if (currentZoomState) {
+			//const newXScale = currentZoomState.rescaleX(xScale);
+			const newYScale = currentZoomState.rescaleY(yScale);
+			//xScale.domain(newXScale.domain());
+			yScale.domain(newYScale.domain());
+		}
 
 		const lineGenerator = line()
 			.x((d, index) => xScale(index))
@@ -51,7 +53,7 @@ const ZoomableLineChart = (props) => {
 			.attr('d', lineGenerator);
 
 		// axes
-		const xAxis = axisBottom(xScale);
+		const xAxis = axisBottom(xScale).tickSize(0).tickFormat('');
 		svg
 			.select('.x-axis')
 			.attr('transform', `translate(0, ${height})`)
@@ -62,13 +64,14 @@ const ZoomableLineChart = (props) => {
 
 		// zoom
 		const zoomBehavior = zoom()
-			.scaleExtent([1, 100])
+			.scaleExtent([0.1, 5])
 			.translateExtent([
 				[0, 0],
 				[width, height],
 			])
 			.on('zoom', (event) => {
 				const zoomState = event.transform;
+				console.log(zoomState);
 				setCurrentZoomState(zoomState);
 			});
 		svg.call(zoomBehavior);

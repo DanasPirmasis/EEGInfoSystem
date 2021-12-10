@@ -52,13 +52,10 @@ const Reader = (props) => {
 
 		return derivation;
 	};
-
+	//console.log(props.data);
 	const changeValues = (e, data) => {
-		//console.log(data);
 		setShownDataInterval(data);
 	};
-
-	//console.log(props.data);
 
 	return (
 		<React.Fragment>
