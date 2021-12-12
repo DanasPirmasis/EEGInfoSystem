@@ -5,8 +5,10 @@ import ZoomableLineChart from './ZoomableLineChart';
 
 const Reader = (props) => {
 	const [selectedDataArray, setSelectedDataArray] = useState([]);
-	const [shownDataInterval, setShownDataInterval] = useState(1000);
+	const [shownDataInterval, setShownDataInterval] = useState(1024);
 	const [openModal, setOpenModal] = useState(true);
+	const [tickPositions, setTickPositions] = useState([]);
+	const [dimensions, setDimensions] = useState(0);
 
 	const handleClose = (selectedSignals) => {
 		setOpenModal(false);
@@ -52,33 +54,77 @@ const Reader = (props) => {
 
 		return derivation;
 	};
-	//console.log(props.data);
+
 	const changeValues = (e, data) => {
+		//console.log(data);
 		setShownDataInterval(data);
+	};
+
+	const dimensionsOfChild = (dimensions) => {
+		let a = document.querySelector('.grid').getElementsByClassName('tick');
+		let pos = [];
+		for (let i = 0; i < a.length; i++) {
+			pos.push(a[i].getBoundingClientRect().x);
+		}
+
+		setTickPositions(pos);
+		setDimensions(dimensions);
 	};
 
 	return (
 		<React.Fragment>
-			<Grid container marginTop="64px" justifyContent="center">
-				<Grid item md={10}>
-					<Slider
-						value={shownDataInterval}
-						step={100}
-						min={1000}
-						max={selectedDataArray[0] ? selectedDataArray[0].length : 1000}
-						size="medium"
-						onChange={changeValues}
-					/>
+			<div>
+				<Grid container marginTop="64px" justifyContent="center">
+					<Grid item md={10}>
+						{selectedDataArray.length > 0 && (
+							<Slider
+								value={shownDataInterval}
+								step={128}
+								min={1024}
+								max={selectedDataArray[0] ? selectedDataArray[0].length : 1024}
+								size="medium"
+								onChange={changeValues}
+							/>
+						)}
+					</Grid>
+					<Grid item md={12}>
+						{selectedDataArray.map((signal) => (
+							<ZoomableLineChart
+								data={signal.slice(shownDataInterval - 1024, shownDataInterval)}
+								dataRange={[shownDataInterval - 1024, shownDataInterval]}
+								dimensionCallback={dimensionsOfChild}
+								numberOfSignals={selectedDataArray.length}
+							/>
+						))}
+					</Grid>
 				</Grid>
-				<Grid item md={12}>
-					{selectedDataArray.map((signal) => (
-						<ZoomableLineChart
-							data={signal.slice(shownDataInterval - 1000, shownDataInterval)}
-							dataRange={[shownDataInterval - 1000, shownDataInterval]}
-						/>
-					))}
-				</Grid>
-			</Grid>
+				{selectedDataArray.length > 0 && (
+					<div style={{ position: 'fixed', width: '100%', bottom: '5px' }}>
+						<div
+							style={{
+								width: dimensions.width,
+								height: '1px',
+								backgroundColor: 'black',
+								float: 'right',
+							}}
+						>
+							{tickPositions.map((pos) => (
+								<div
+									style={{
+										width: '1px',
+										height: '10px',
+										backgroundColor: 'black',
+										position: 'fixed',
+										bottom: '5px',
+										left: pos + 'px',
+									}}
+								/>
+							))}
+						</div>
+					</div>
+				)}
+			</div>
+
 			<MontageModal
 				open={openModal}
 				handleClose={handleClose}

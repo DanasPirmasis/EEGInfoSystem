@@ -19,6 +19,7 @@ const ZoomableLineChart = (props) => {
 	const dimensions = useResizeObserver(wrapperRef);
 	const [currentZoomState, setCurrentZoomState] = useState();
 	const [selectedData, setSelectedData] = useState(props.data);
+	const [dimensionState, setDimensionState] = useState(dimensions);
 
 	useEffect(() => {
 		setSelectedData(props.data);
@@ -26,7 +27,15 @@ const ZoomableLineChart = (props) => {
 		const svgContent = svg.select('.content');
 		const { width, height } =
 			dimensions || wrapperRef.current.getBoundingClientRect();
-		const xScale = scaleLinear().domain([0, 1000]).range([0, width]);
+
+		if (dimensions !== dimensionState) {
+			setDimensionState(dimensions);
+			props.dimensionCallback(dimensions);
+		}
+
+		const xScale = scaleLinear()
+			.domain([0, selectedData.length])
+			.range([0, width]);
 
 		const yScale = scaleLinear().domain([-2000, 2000]).range([height, 10]);
 
@@ -56,7 +65,7 @@ const ZoomableLineChart = (props) => {
 		const xAxis = axisBottom(xScale)
 			.tickSize(-height)
 			.tickFormat('')
-			.tickValues([128, 256, 384, 512, 640, 768, 869]);
+			.tickValues([127, 255, 383, 511, 639, 767, 895, 1023]);
 		//these values should change when moving
 		svg
 			.select('.x-axis')
@@ -71,7 +80,7 @@ const ZoomableLineChart = (props) => {
 
 		// zoom
 		const zoomBehavior = zoom()
-			.scaleExtent([0.1, 5])
+			.scaleExtent([0.1, 100])
 			.translateExtent([
 				[0, 0],
 				[width, height],
@@ -86,7 +95,11 @@ const ZoomableLineChart = (props) => {
 	return (
 		<React.Fragment>
 			<div ref={wrapperRef} className={'svgDiv'}>
-				<svg className={'svg1'} ref={svgRef}>
+				<svg
+					className={'svg1'}
+					style={{ height: 100 / props.numberOfSignals + 'vh' }}
+					ref={svgRef}
+				>
 					<defs>
 						<clipPath id={'chart1'}>
 							<rect x="0" y="0" width="100%" height="100%" />
