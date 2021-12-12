@@ -11,7 +11,7 @@ import {
 	zoom,
 } from 'd3';
 
-import './TestChart.css';
+import './Chart.css';
 
 const ZoomableLineChart = (props) => {
 	const svgRef = useRef();
@@ -28,7 +28,7 @@ const ZoomableLineChart = (props) => {
 			dimensions || wrapperRef.current.getBoundingClientRect();
 		const xScale = scaleLinear().domain([0, 1000]).range([0, width]);
 
-		const yScale = scaleLinear().domain([-1000, 1000]).range([height, 10]);
+		const yScale = scaleLinear().domain([-2000, 2000]).range([height, 10]);
 
 		if (currentZoomState) {
 			//const newXScale = currentZoomState.rescaleX(xScale);
@@ -53,13 +53,20 @@ const ZoomableLineChart = (props) => {
 			.attr('d', lineGenerator);
 
 		// axes
-		const xAxis = axisBottom(xScale).tickSize(0).tickFormat('');
+		const xAxis = axisBottom(xScale)
+			.tickSize(-height)
+			.tickFormat('')
+			.tickValues([128, 256, 384, 512, 640, 768, 869]);
+		//these values should change when moving
 		svg
 			.select('.x-axis')
+			.attr('class', 'grid')
 			.attr('transform', `translate(0, ${height})`)
 			.call(xAxis);
 
-		const yAxis = axisLeft(yScale);
+		const yAxis = axisLeft(yScale)
+			.tickSize(-width)
+			.tickFormat((index) => index + ' uV');
 		svg.select('.y-axis').call(yAxis);
 
 		// zoom
@@ -71,7 +78,6 @@ const ZoomableLineChart = (props) => {
 			])
 			.on('zoom', (event) => {
 				const zoomState = event.transform;
-				console.log(zoomState);
 				setCurrentZoomState(zoomState);
 			});
 		svg.call(zoomBehavior);
