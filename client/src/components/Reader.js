@@ -1,16 +1,20 @@
 import { Grid, Slider } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MontageModal from './MontageModal';
 import ZoomableLineChart from './ZoomableLineChart';
 
 const Reader = (props) => {
 	const [selectedDataArray, setSelectedDataArray] = useState([]);
-	const [shownDataInterval, setShownDataInterval] = useState(1024);
+	const [shownDataInterval, setShownDataInterval] = useState(
+		props.duration * 128
+	);
 	const [openModal, setOpenModal] = useState(true);
 	const [tickPositions, setTickPositions] = useState([]);
 	const [dimensions, setDimensions] = useState(0);
+	const [amplitude, setAmplitude] = useState(props.amplitude);
 
 	const handleClose = (selectedSignals) => {
+		setSelectedDataArray([]);
 		setOpenModal(false);
 		let signalNumberArray = [];
 		for (let i = 0; i < selectedSignals.length; i++) {
@@ -56,7 +60,6 @@ const Reader = (props) => {
 	};
 
 	const changeValues = (e, data) => {
-		//console.log(data);
 		setShownDataInterval(data);
 	};
 
@@ -71,6 +74,12 @@ const Reader = (props) => {
 		setDimensions(dimensions);
 	};
 
+	useEffect(() => {
+		//setShownDataInterval((shownDataInterval) => shownDataInterval - props.duration * 128)
+		console.log('useEffect');
+		setOpenModal(true);
+	}, [props.duration, props.signalButton]);
+
 	return (
 		<React.Fragment>
 			<div>
@@ -80,8 +89,12 @@ const Reader = (props) => {
 							<Slider
 								value={shownDataInterval}
 								step={128}
-								min={1024}
-								max={selectedDataArray[0] ? selectedDataArray[0].length : 1024}
+								min={props.duration * 128}
+								max={
+									selectedDataArray[0]
+										? selectedDataArray[0].length
+										: props.duration * 128
+								}
 								size="medium"
 								onChange={changeValues}
 							/>
@@ -90,8 +103,14 @@ const Reader = (props) => {
 					<Grid item md={12}>
 						{selectedDataArray.map((signal) => (
 							<ZoomableLineChart
-								data={signal.slice(shownDataInterval - 1024, shownDataInterval)}
-								dataRange={[shownDataInterval - 1024, shownDataInterval]}
+								data={signal.slice(
+									shownDataInterval - props.duration * 128,
+									shownDataInterval
+								)}
+								dataRange={[
+									shownDataInterval - props.duration * 128,
+									shownDataInterval,
+								]}
 								dimensionCallback={dimensionsOfChild}
 								numberOfSignals={selectedDataArray.length}
 							/>

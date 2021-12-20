@@ -8,6 +8,9 @@ import DragAndDrop from './components/DragAndDrop';
 const App = () => {
 	const [nextScreen, setNextScreen] = useState(false);
 	const [edfFile, setEdfFile] = useState([]);
+	const [duration, setDuration] = useState(8);
+	const [amplitude, setAmplitude] = useState(10);
+	const [signalButtonClicked, setSignalButtonClicked] = useState();
 
 	const fadeToNextScreen = () => {
 		setNextScreen(true);
@@ -17,7 +20,19 @@ const App = () => {
 		setEdfFile(file);
 		setNextScreen(true);
 	};
-	//TODO: Make it so that UpperToolbar and Reader components only mount after the others unmount
+
+	const amplitudeHandler = (amplitude) => {
+		setAmplitude(amplitude);
+	};
+
+	const durationHandler = (duration) => {
+		setDuration(duration);
+	};
+
+	const signalButtonHandler = (signalButtonClick) => {
+		setSignalButtonClicked(signalButtonClick);
+	};
+	//Maybe I should move the modal to parent component
 	return (
 		<div>
 			<Grid container direction="row">
@@ -31,8 +46,20 @@ const App = () => {
 					></Login>
 				</Grid>
 			</Grid>
-			<UpperToolbar appear={nextScreen} />
-			{nextScreen && <Reader data={edfFile} />}
+			<UpperToolbar
+				appear={nextScreen}
+				durationHandler={durationHandler}
+				amplitudeHandler={amplitudeHandler}
+				signalButtonHandler={signalButtonHandler}
+			/>
+			{nextScreen && (
+				<Reader
+					data={edfFile}
+					duration={duration}
+					amplitude={amplitude}
+					signalButton={signalButtonClicked}
+				/>
+			)}
 		</div>
 	);
 };
