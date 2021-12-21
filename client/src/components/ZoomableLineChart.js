@@ -18,23 +18,21 @@ const ZoomableLineChart = (props) => {
 	const wrapperRef = useRef();
 	const dimensions = useResizeObserver(wrapperRef);
 	const [currentZoomState, setCurrentZoomState] = useState();
-	const [selectedData, setSelectedData] = useState(props.data);
 	const [dimensionState, setDimensionState] = useState(dimensions);
 
 	useEffect(() => {
-		setSelectedData(props.data);
+		//Weird way to update parent component ticks
+		// if (props.data !== selectedData) {
+		// 	//setDimensionState(dimensions);
+		// 	props.dimensionCallback(dimensions);
+		// }
 		const svg = select(svgRef.current);
 		const svgContent = svg.select('.content');
 		const { width, height } =
 			dimensions || wrapperRef.current.getBoundingClientRect();
 
-		if (dimensions !== dimensionState) {
-			setDimensionState(dimensions);
-			props.dimensionCallback(dimensions);
-		}
-
 		const xScale = scaleLinear()
-			.domain([0, selectedData.length])
+			.domain([0, props.data.length])
 			.range([0, width]);
 
 		const yScale = scaleLinear().domain([-2000, 2000]).range([height, 10]);
@@ -53,7 +51,7 @@ const ZoomableLineChart = (props) => {
 		// render the line
 		svgContent
 			.selectAll('.myLine')
-			.data([selectedData])
+			.data([props.data])
 			.join('path')
 			.attr('class', 'myLine')
 			.attr('stroke', 'steelblue')
@@ -62,13 +60,23 @@ const ZoomableLineChart = (props) => {
 			.attr('d', lineGenerator);
 
 		// axes
+		let tickValues = [];
+
+		for (let i = 0; i < props.data.length; i = i + 128) {
+			if (i !== 0) {
+				tickValues.push(i - 1);
+			} else {
+				tickValues.push(i);
+			}
+		}
+
 		const xAxis = axisBottom(xScale)
 			.tickSize(-height)
 			.tickFormat('')
-			.tickValues([127, 255, 383, 511, 639, 767, 895, 1023]);
-		//these values should change when moving
+			.tickValues(tickValues);
+
 		svg
-			.select('.x-axis')
+			.select('.grid')
 			.attr('class', 'grid')
 			.attr('transform', `translate(0, ${height})`)
 			.call(xAxis);
@@ -90,7 +98,7 @@ const ZoomableLineChart = (props) => {
 				setCurrentZoomState(zoomState);
 			});
 		svg.call(zoomBehavior);
-	}, [currentZoomState, dimensions, props.data, selectedData]);
+	}, [currentZoomState, dimensions, props.data]);
 
 	return (
 		<React.Fragment>
@@ -106,7 +114,7 @@ const ZoomableLineChart = (props) => {
 						</clipPath>
 					</defs>
 					<g className="content" clipPath={`url(#${'chart1'})`}></g>
-					<g className="x-axis" />
+					<g className="grid" />
 					<g className="y-axis" />
 				</svg>
 			</div>

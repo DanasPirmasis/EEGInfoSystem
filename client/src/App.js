@@ -10,7 +10,7 @@ const App = () => {
 	const [edfFile, setEdfFile] = useState([]);
 	const [duration, setDuration] = useState(8);
 	const [amplitude, setAmplitude] = useState(10);
-	const [signalButtonClicked, setSignalButtonClicked] = useState();
+	const [signalButtonClicked, setSignalButtonClicked] = useState(true);
 
 	const fadeToNextScreen = () => {
 		setNextScreen(true);
@@ -29,9 +29,10 @@ const App = () => {
 		setDuration(duration);
 	};
 
-	const signalButtonHandler = (signalButtonClick) => {
-		setSignalButtonClicked(signalButtonClick);
+	const signalButtonHandler = (buttonState) => {
+		setSignalButtonClicked(buttonState);
 	};
+
 	//Maybe I should move the modal to parent component
 	return (
 		<div>
@@ -57,7 +58,8 @@ const App = () => {
 					data={edfFile}
 					duration={duration}
 					amplitude={amplitude}
-					signalButton={signalButtonClicked}
+					signalButtonClicked={signalButtonClicked}
+					signalButtonHandler={signalButtonHandler}
 				/>
 			)}
 		</div>

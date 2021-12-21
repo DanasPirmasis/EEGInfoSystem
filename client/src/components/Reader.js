@@ -1,6 +1,7 @@
 import { Grid, Slider } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import MontageModal from './MontageModal';
+import TimeBar from './TimeBar';
 import ZoomableLineChart from './ZoomableLineChart';
 
 const Reader = (props) => {
@@ -8,14 +9,17 @@ const Reader = (props) => {
 	const [shownDataInterval, setShownDataInterval] = useState(
 		props.duration * 128
 	);
-	const [openModal, setOpenModal] = useState(true);
+	const [time, setTime] = useState([]);
+	const [openModal, setOpenModal] = useState(props.signalButtonClicked);
 	const [tickPositions, setTickPositions] = useState([]);
 	const [dimensions, setDimensions] = useState(0);
 	const [amplitude, setAmplitude] = useState(props.amplitude);
+	const [duration, setDuration] = useState(props.duration);
 
 	const handleClose = (selectedSignals) => {
 		setSelectedDataArray([]);
 		setOpenModal(false);
+		props.signalButtonHandler(false);
 		let signalNumberArray = [];
 		for (let i = 0; i < selectedSignals.length; i++) {
 			let signal = selectedSignals[i].split(' - ');
@@ -60,7 +64,28 @@ const Reader = (props) => {
 	};
 
 	const changeValues = (e, data) => {
+		let currentIntervalTime = data / 128;
 		setShownDataInterval(data);
+
+		let dateChanger = new Date(props.data._header.recordingDate);
+
+		if (dateChanger < 0) {
+			dateChanger.setFullYear(1970);
+		}
+		dateChanger.setSeconds(dateChanger.getSeconds() + currentIntervalTime);
+
+		let dateStringArray = [];
+		for (let i = 0; i < duration; i++) {
+			dateChanger.setSeconds(dateChanger.getSeconds() - 1);
+			dateStringArray.push(
+				dateChanger.getHours() +
+					':' +
+					dateChanger.getMinutes() +
+					':' +
+					dateChanger.getSeconds()
+			);
+		}
+		setTime(dateStringArray.reverse());
 	};
 
 	const dimensionsOfChild = (dimensions) => {
@@ -69,16 +94,35 @@ const Reader = (props) => {
 		for (let i = 0; i < a.length; i++) {
 			pos.push(a[i].getBoundingClientRect().x);
 		}
-
+		console.log(pos);
 		setTickPositions(pos);
 		setDimensions(dimensions);
 	};
 
 	useEffect(() => {
-		//setShownDataInterval((shownDataInterval) => shownDataInterval - props.duration * 128)
-		console.log('useEffect');
-		setOpenModal(true);
-	}, [props.duration, props.signalButton]);
+		setShownDataInterval(props.duration * 128);
+		setDuration(props.duration);
+		setAmplitude(props.amplitude);
+		setOpenModal(props.signalButtonClicked);
+		console.log('a');
+		let childSvg = document.querySelector('.svg1');
+
+		if (childSvg !== null) {
+			setDimensions(childSvg.getBoundingClientRect().width);
+			setTimeout(() => {
+				let childSvgTicks = document
+					.querySelector('.grid')
+					.getElementsByClassName('tick');
+
+				let pos = [];
+				for (let i = 0; i < childSvgTicks.length; i++) {
+					pos.push(childSvgTicks[i].getBoundingClientRect().x);
+				}
+
+				setTickPositions(pos);
+			}, 25);
+		}
+	}, [props.signalButtonClicked, props.amplitude, props.duration]);
 
 	return (
 		<React.Fragment>
@@ -118,27 +162,16 @@ const Reader = (props) => {
 					</Grid>
 				</Grid>
 				{selectedDataArray.length > 0 && (
-					<div style={{ position: 'fixed', width: '100%', bottom: '5px' }}>
+					<div style={{ position: 'fixed', width: '100%', bottom: '15px' }}>
 						<div
 							style={{
-								width: dimensions.width,
+								width: dimensions,
 								height: '1px',
 								backgroundColor: 'black',
 								float: 'right',
 							}}
 						>
-							{tickPositions.map((pos) => (
-								<div
-									style={{
-										width: '1px',
-										height: '10px',
-										backgroundColor: 'black',
-										position: 'fixed',
-										bottom: '5px',
-										left: pos + 'px',
-									}}
-								/>
-							))}
+							<TimeBar pos={tickPositions} val={time} />
 						</div>
 					</div>
 				)}

@@ -16,7 +16,6 @@ import { useState } from 'react';
 const UpperToolbar = (props) => {
 	const [duration, setDuration] = useState(8);
 	const [amplitude, setAmplitude] = useState(10);
-	const [signalButtonVal, setSignalButtonVal] = useState(0);
 
 	const changeDuration = (e) => {
 		setDuration(e.target.value);
@@ -28,9 +27,8 @@ const UpperToolbar = (props) => {
 		props.amplitudeHandler(e.target.value);
 	};
 
-	const signalChangeHandler = (e) => {
-		setSignalButtonVal((signalButtonVal) => signalButtonVal + 1);
-		props.signalButtonHandler(signalButtonVal);
+	const signalChangeHandler = () => {
+		props.signalButtonHandler(true);
 	};
 
 	return (
