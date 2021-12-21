@@ -10,13 +10,13 @@ const TimeBar = (props) => {
 	}, [props.pos, props.val]);
 
 	return (
-		<div>
+		<div style={{ display: 'contents' }}>
 			{val.map((v, index) => (
 				<div
 					style={{
-						width: '2px',
-						height: '15px',
-						position: 'sticky',
+						position: 'fixed',
+						width: '1rem',
+						height: '10px',
 						bottom: '5px',
 						left: pos[index] + 'px',
 					}}
