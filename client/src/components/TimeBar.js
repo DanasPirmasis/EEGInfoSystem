@@ -19,6 +19,8 @@ const TimeBar = (props) => {
 						height: '10px',
 						bottom: '5px',
 						left: pos[index] + 'px',
+						color: 'black',
+						paddingLeft: '0.5rem',
 					}}
 				>
 					{val[index]}

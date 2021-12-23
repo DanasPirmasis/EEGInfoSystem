@@ -8,9 +8,11 @@ import {
 	Select,
 	FormControl,
 	MenuItem,
+	IconButton,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import BrushIcon from '@mui/icons-material/Brush';
 import { useState } from 'react';
 
 const UpperToolbar = (props) => {
@@ -37,6 +39,7 @@ const UpperToolbar = (props) => {
 			timeout={1000}
 			addEndListener={props.animationFinishedHandler}
 		>
+			{/* sx={{ backgroundColor: '#121212' }} */}
 			<Box sx={{ flexGrow: 1 }}>
 				<AppBar sx={{ backgroundColor: '#121212' }}>
 					<Toolbar>
@@ -44,6 +47,13 @@ const UpperToolbar = (props) => {
 							EEG WebReader
 						</Typography>
 						<div style={{ paddingRight: '1rem' }}>
+							<IconButton>
+								<BrushIcon
+									sx={{ color: '#FFFFFF' }}
+									fontSize="large"
+								></BrushIcon>
+							</IconButton>
+
 							<FormControl
 								variant="filled"
 								size="small"

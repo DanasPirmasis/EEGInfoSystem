@@ -15,10 +15,26 @@ const Reader = (props) => {
 	const [dimensions, setDimensions] = useState(0);
 	const [amplitude, setAmplitude] = useState(props.amplitude);
 	const [duration, setDuration] = useState(props.duration);
+	const [shownSignals, setShownSignals] = useState([]);
+	const [highlightedZones, setHighlightedZones] = useState({
+		highlights: [
+			{
+				signalNumber: 'F-RF - H-RF',
+				valueRange: [256, 512],
+				comment: 'Beans',
+			},
+			{
+				signalNumber: 'H-RF - A1-RF',
+				valueRange: [718, 800],
+				comment: 'Pancakes',
+			},
+		],
+	});
 
 	const handleClose = (selectedSignals) => {
 		setSelectedDataArray([]);
 		setOpenModal(false);
+		setShownSignals(selectedSignals);
 		props.signalButtonHandler(false);
 		let signalNumberArray = [];
 		for (let i = 0; i < selectedSignals.length; i++) {
@@ -145,7 +161,7 @@ const Reader = (props) => {
 						)}
 					</Grid>
 					<Grid item md={12}>
-						{selectedDataArray.map((signal) => (
+						{selectedDataArray.map((signal, index) => (
 							<ZoomableLineChart
 								data={signal.slice(
 									shownDataInterval - props.duration * 128,
@@ -157,6 +173,9 @@ const Reader = (props) => {
 								]}
 								dimensionCallback={dimensionsOfChild}
 								numberOfSignals={selectedDataArray.length}
+								signalName={shownSignals[index]}
+								highlights={highlightedZones}
+								key={shownSignals[index]}
 							/>
 						))}
 					</Grid>
@@ -167,7 +186,7 @@ const Reader = (props) => {
 							style={{
 								width: dimensions,
 								height: '1px',
-								backgroundColor: 'black',
+								backgroundColor: '#f7f7f700',
 								float: 'right',
 							}}
 						>
