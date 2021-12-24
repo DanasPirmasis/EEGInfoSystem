@@ -30,10 +30,10 @@ const Login = (props) => {
 				minHeight="100vh"
 				boxShadow="10px"
 			>
-				<Grid item xs={8}>
+				<Grid item xs={4} md={8}>
 					<Typography variant="h4">EEG WebReader</Typography>
 				</Grid>
-				<Grid item xs={8}>
+				<Grid item xs={4} md={8}>
 					<TextField
 						fullWidth
 						label="Email"
