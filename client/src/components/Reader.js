@@ -16,6 +16,7 @@ const Reader = (props) => {
 	const [amplitude, setAmplitude] = useState(props.amplitude);
 	const [duration, setDuration] = useState(props.duration);
 	const [shownSignals, setShownSignals] = useState([]);
+	const [isBrushSelected, setIsBrushSelected] = useState(false);
 	const [highlightedZones, setHighlightedZones] = useState({
 		highlights: [
 			{
@@ -55,7 +56,10 @@ const Reader = (props) => {
 			let firstSignal = signalNumberArray[i];
 			let secondSignal = signalNumberArray[i + 1];
 
-			let flatDerivedArray = flattenAndSubtract(firstSignal, secondSignal);
+			let flatDerivedArray = flattenAndSubtract(
+				firstSignal,
+				secondSignal
+			);
 			setSelectedDataArray((selectedDataArray) => [
 				...selectedDataArray,
 				flatDerivedArray,
@@ -71,7 +75,9 @@ const Reader = (props) => {
 		if (props.data) {
 			for (let i = 0; i < firstSignalData.length; i++) {
 				for (let j = 0; j < firstSignalData[i].length; j++) {
-					derivation.push(secondSignalData[i][j] - firstSignalData[i][j]);
+					derivation.push(
+						secondSignalData[i][j] - firstSignalData[i][j]
+					);
 				}
 			}
 		}
@@ -120,6 +126,7 @@ const Reader = (props) => {
 		setDuration(props.duration);
 		setAmplitude(props.amplitude);
 		setOpenModal(props.signalButtonClicked);
+		setIsBrushSelected(props.brushSelected);
 		console.log('a');
 		let childSvg = document.querySelector('.svg1');
 
@@ -138,12 +145,17 @@ const Reader = (props) => {
 				setTickPositions(pos);
 			}, 25);
 		}
-	}, [props.signalButtonClicked, props.amplitude, props.duration]);
+	}, [
+		props.signalButtonClicked,
+		props.amplitude,
+		props.duration,
+		props.brushSelected,
+	]);
 
 	return (
 		<React.Fragment>
 			<div>
-				<Grid container marginTop="64px" justifyContent="center">
+				<Grid container justifyContent='center'>
 					<Grid item md={10}>
 						{selectedDataArray.length > 0 && (
 							<Slider
@@ -155,7 +167,7 @@ const Reader = (props) => {
 										? selectedDataArray[0].length
 										: props.duration * 128
 								}
-								size="medium"
+								size='medium'
 								onChange={changeValues}
 							/>
 						)}
@@ -175,13 +187,21 @@ const Reader = (props) => {
 								numberOfSignals={selectedDataArray.length}
 								signalName={shownSignals[index]}
 								highlights={highlightedZones}
+								isBrushSelected={isBrushSelected}
+								amplitude={[-amplitude, amplitude]}
 								key={shownSignals[index]}
 							/>
 						))}
 					</Grid>
 				</Grid>
 				{selectedDataArray.length > 0 && (
-					<div style={{ position: 'fixed', width: '100%', bottom: '15px' }}>
+					<div
+						style={{
+							position: 'fixed',
+							width: '100%',
+							bottom: '15px',
+						}}
+					>
 						<div
 							style={{
 								width: dimensions,

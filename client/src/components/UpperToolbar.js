@@ -17,7 +17,8 @@ import { useState } from 'react';
 
 const UpperToolbar = (props) => {
 	const [duration, setDuration] = useState(8);
-	const [amplitude, setAmplitude] = useState(10);
+	const [amplitude, setAmplitude] = useState(1000);
+	const [brushColor, setBrushColor] = useState('#FFFFFF');
 
 	const changeDuration = (e) => {
 		setDuration(e.target.value);
@@ -33,6 +34,13 @@ const UpperToolbar = (props) => {
 		props.signalButtonHandler(true);
 	};
 
+	const brushHandler = (e) => {
+		props.brushHandler(brushColor === '#FFFFFF' ? true : false);
+		setBrushColor((brushColor) =>
+			brushColor === '#FFFFFF' ? '#585CD2' : '#FFFFFF'
+		);
+	};
+
 	return (
 		<Fade
 			in={props.appear}
@@ -41,50 +49,60 @@ const UpperToolbar = (props) => {
 		>
 			{/* sx={{ backgroundColor: '#121212' }} */}
 			<Box sx={{ flexGrow: 1 }}>
-				<AppBar sx={{ backgroundColor: '#121212' }}>
+				<AppBar sx={{ backgroundColor: '#121212', position: 'sticky' }}>
 					<Toolbar>
-						<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+						<Typography
+							variant='h6'
+							component='div'
+							sx={{ flexGrow: 1 }}
+						>
 							EEG WebReader
 						</Typography>
-						<div style={{ paddingRight: '1rem' }}>
-							<IconButton>
-								<BrushIcon
-									sx={{ color: '#FFFFFF' }}
-									fontSize="large"
-								></BrushIcon>
-							</IconButton>
+						<IconButton onClick={brushHandler}>
+							<BrushIcon
+								sx={{ color: brushColor }}
+								fontSize='large'
+							></BrushIcon>
+						</IconButton>
 
-							<FormControl
-								variant="filled"
-								size="small"
-								sx={{
-									width: '15rem',
-									backgroundColor: 'white',
-								}}
+						<FormControl
+							variant='filled'
+							size='small'
+							sx={{
+								backgroundColor: 'white',
+							}}
+						>
+							<InputLabel>Amplitude</InputLabel>
+							<Select
+								value={amplitude}
+								label='Amplitude'
+								onChange={changeAmplitude}
 							>
-								<InputLabel>Amplitude</InputLabel>
-								<Select
-									value={amplitude}
-									label="Amplitude"
-									onChange={changeAmplitude}
-								>
-									<MenuItem value={10}>10 uV</MenuItem>
-								</Select>
-							</FormControl>
-						</div>
-						<div style={{ paddingRight: '1rem' }}>
+								<MenuItem value={250}>250 uV</MenuItem>
+								<MenuItem value={500}>500 uV</MenuItem>
+								<MenuItem value={1000}>1000 uV</MenuItem>
+								<MenuItem value={2500}>2500 uV</MenuItem>
+								<MenuItem value={5000}>5000 uV</MenuItem>
+								<MenuItem value={10000}>10000 uV</MenuItem>
+							</Select>
+						</FormControl>
+						<Box
+							style={{
+								marginLeft: '1rem',
+								marginRight: '1rem',
+							}}
+						>
 							<FormControl
-								variant="filled"
-								size="small"
+								variant='filled'
+								size='small'
 								sx={{
-									width: '15rem',
 									backgroundColor: 'white',
 								}}
 							>
 								<InputLabel>Duration</InputLabel>
 								<Select
 									value={duration}
-									label="Duration"
+									label='Duration'
 									onChange={changeDuration}
 								>
 									<MenuItem value={4}>4 seconds</MenuItem>
@@ -93,30 +111,35 @@ const UpperToolbar = (props) => {
 									<MenuItem value={60}>60 seconds</MenuItem>
 								</Select>
 							</FormControl>
-						</div>
+						</Box>
 						<Button
-							variant="outlined"
-							color="inherit"
+							variant='outlined'
+							color='inherit'
 							sx={{ marginRight: '1rem' }}
 							onClick={signalChangeHandler}
 						>
 							Change Signals
 						</Button>
-						<Typography sx={{ marginRight: '1rem' }}>Guest User</Typography>
+						<Typography sx={{ marginRight: '0.5rem' }}>
+							Guest User
+						</Typography>
 						<AccountCircleIcon
-							sx={{ transform: 'scale(1.8)', marginRight: '1rem' }}
+							sx={{
+								transform: 'scale(1.8)',
+								marginRight: '0.5rem',
+							}}
 						></AccountCircleIcon>
 						<Button
-							variant="outlined"
-							color="inherit"
-							sx={{ marginLeft: '1rem' }}
+							variant='outlined'
+							color='inherit'
+							sx={{ marginLeft: '0.5rem' }}
 						>
 							Login
 						</Button>
 						<Button
-							variant="outlined"
-							color="inherit"
-							sx={{ marginRight: '1rem', marginLeft: '1rem' }}
+							variant='outlined'
+							color='inherit'
+							sx={{ marginLeft: '1rem' }}
 						>
 							Help
 						</Button>
