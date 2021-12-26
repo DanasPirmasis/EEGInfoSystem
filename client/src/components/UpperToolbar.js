@@ -72,7 +72,7 @@ const UpperToolbar = (props) => {
 							sx={{ marginRight: '1rem' }}
 							onClick={saveHandler}
 						>
-							Save hightlight
+							Save highlight
 						</Button>
 						<IconButton onClick={brushHandler}>
 							<BrushIcon
@@ -132,15 +132,7 @@ const UpperToolbar = (props) => {
 						>
 							Change Signals
 						</Button>
-						<Button
-							size='small'
-							variant='outlined'
-							color='inherit'
-							sx={{ marginRight: '1rem' }}
-							onClick={loginHandler}
-						>
-							Login
-						</Button>
+
 						<Button
 							size='small'
 							variant='outlined'
@@ -149,6 +141,17 @@ const UpperToolbar = (props) => {
 						>
 							Help
 						</Button>
+						{!props.userData && (
+							<Button
+								size='small'
+								variant='outlined'
+								color='inherit'
+								sx={{ marginRight: '1rem' }}
+								onClick={loginHandler}
+							>
+								Login
+							</Button>
+						)}
 						{props.userData && (
 							<IconButton onClick={openSettings}>
 								<AccountCircleIcon

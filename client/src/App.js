@@ -74,7 +74,7 @@ const App = () => {
 			</Grid>
 
 			{nextScreen && (
-				<div style={{ maxHeight: '80%%' }}>
+				<div>
 					<UpperToolbar
 						appear={nextScreen}
 						durationHandler={durationHandler}
