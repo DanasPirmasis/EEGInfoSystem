@@ -30,9 +30,7 @@ const ZoomableLineChart = (props) => {
 			.domain([0, props.data.length])
 			.range([0, width]);
 
-		const yScale = scaleLinear()
-			.domain(props.amplitude)
-			.range([height, 10]);
+		const yScale = scaleLinear().domain(props.amplitude).range([height, 10]);
 
 		if (currentZoomState) {
 			const newYScale = currentZoomState.rescaleY(yScale);
@@ -68,7 +66,8 @@ const ZoomableLineChart = (props) => {
 			.tickFormat('')
 			.tickValues(tickValues);
 
-		svg.select('.grid')
+		svg
+			.select('.grid')
 			.attr('class', 'grid')
 			.attr('transform', `translate(0, ${height})`)
 			.call(xAxis);
@@ -87,6 +86,13 @@ const ZoomableLineChart = (props) => {
 			.on('zoom', (event) => {
 				if (!props.isBrushSelected) {
 					const zoomState = event.transform;
+					setCurrentZoomState(zoomState);
+				}
+				if (!props.isBrushSelected && event.sourceEvent.type === 'dblclick') {
+					const zoomState = event.transform;
+					zoomState.k = 1;
+					zoomState.x = 0;
+					zoomState.y = 0;
 					setCurrentZoomState(zoomState);
 				}
 			});
@@ -109,26 +115,20 @@ const ZoomableLineChart = (props) => {
 				) {
 					let highlightWidth =
 						highlight.valueRange[1] - highlight.valueRange[0];
-					let highlightStart =
-						highlight.valueRange[0] - props.dataRange[0];
+					let highlightStart = highlight.valueRange[0] - props.dataRange[0];
 					let highlightEnd = highlightStart + highlightWidth;
 					if (highlightStart < 0) {
 						highlightStart = 0;
 					}
-					let start = Math.round(
-						(highlightStart / props.data.length) * 100
-					);
-					let end = Math.round(
-						(highlightEnd / props.data.length) * 100
-					);
+					let start = Math.round((highlightStart / props.data.length) * 100);
+					let end = Math.round((highlightEnd / props.data.length) * 100);
 
 					backgroundStyleString = backgroundStyleString.concat(
 						`#f7f7f7 ${start}%, pink ${start}%,pink ${end}%, #f7f7f7 ${end}%, `
 					);
 				}
 			});
-			backgroundStyleString =
-				backgroundStyleString.concat('#f7f7f7 100%)');
+			backgroundStyleString = backgroundStyleString.concat('#f7f7f7 100%)');
 			backgroundSvg.style.background = backgroundStyleString;
 		}
 
@@ -174,7 +174,7 @@ const ZoomableLineChart = (props) => {
 				<svg
 					className={'svg1'}
 					id={props.signalName}
-					style={{ height: 82 / props.numberOfSignals + 'vh' }}
+					style={{ height: 89 / props.numberOfSignals + 'vh' }}
 					ref={svgRef}
 				>
 					<defs>
