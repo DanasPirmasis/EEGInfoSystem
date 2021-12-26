@@ -1,6 +1,7 @@
 import { Grid, Slider } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import MontageModal from './MontageModal';
+import SaveModal from './SaveModal';
 import TimeBar from './TimeBar';
 import ZoomableLineChart from './ZoomableLineChart';
 
@@ -11,6 +12,7 @@ const Reader = (props) => {
 	);
 	const [time, setTime] = useState([]);
 	const [openModal, setOpenModal] = useState(props.signalButtonClicked);
+	const [openSaveModal, setOpenSaveModal] = useState(props.saveState);
 	const [tickPositions, setTickPositions] = useState([]);
 	const [dimensions, setDimensions] = useState(0);
 	const [amplitude, setAmplitude] = useState(props.amplitude);
@@ -31,6 +33,7 @@ const Reader = (props) => {
 			},
 		],
 	});
+	const [newHighlights, setNewHighlights] = useState([]);
 
 	const handleClose = (selectedSignals) => {
 		setSelectedDataArray([]);
@@ -56,10 +59,7 @@ const Reader = (props) => {
 			let firstSignal = signalNumberArray[i];
 			let secondSignal = signalNumberArray[i + 1];
 
-			let flatDerivedArray = flattenAndSubtract(
-				firstSignal,
-				secondSignal
-			);
+			let flatDerivedArray = flattenAndSubtract(firstSignal, secondSignal);
 			setSelectedDataArray((selectedDataArray) => [
 				...selectedDataArray,
 				flatDerivedArray,
@@ -75,9 +75,7 @@ const Reader = (props) => {
 		if (props.data) {
 			for (let i = 0; i < firstSignalData.length; i++) {
 				for (let j = 0; j < firstSignalData[i].length; j++) {
-					derivation.push(
-						secondSignalData[i][j] - firstSignalData[i][j]
-					);
+					derivation.push(secondSignalData[i][j] - firstSignalData[i][j]);
 				}
 			}
 		}
@@ -121,12 +119,32 @@ const Reader = (props) => {
 		setDimensions(dimensions);
 	};
 
+	const newSelectedAreaHandler = (newHighlight) => {
+		console.log(newHighlight);
+		setNewHighlights((newHighlights) => [...newHighlights, newHighlight]);
+	};
+
+	const handleSaveModalClose = (addedHighlights) => {
+		setOpenSaveModal(false);
+		props.saveStateHandler(false);
+		//console.log(addedHighlights);
+	};
+
+	const removeNewHighlight = (highlight) => {
+		let tempHighlightArray = newHighlights;
+		tempHighlightArray = tempHighlightArray.filter((val) => {
+			return val.valueRange !== highlight.valueRange;
+		});
+		setNewHighlights(tempHighlightArray);
+	};
+
 	useEffect(() => {
 		setShownDataInterval(props.duration * 128);
 		setDuration(props.duration);
 		setAmplitude(props.amplitude);
 		setOpenModal(props.signalButtonClicked);
 		setIsBrushSelected(props.brushSelected);
+		setOpenSaveModal(props.saveState);
 		console.log('a');
 		let childSvg = document.querySelector('.svg1');
 
@@ -150,6 +168,7 @@ const Reader = (props) => {
 		props.amplitude,
 		props.duration,
 		props.brushSelected,
+		props.saveState,
 	]);
 
 	return (
@@ -189,6 +208,7 @@ const Reader = (props) => {
 								highlights={highlightedZones}
 								isBrushSelected={isBrushSelected}
 								amplitude={[-amplitude, amplitude]}
+								newSelectedAreaHandler={newSelectedAreaHandler}
 								key={shownSignals[index]}
 							/>
 						))}
@@ -220,6 +240,12 @@ const Reader = (props) => {
 				open={openModal}
 				handleClose={handleClose}
 				signals={props.data._header.signalInfo}
+			/>
+			<SaveModal
+				open={openSaveModal}
+				handleClose={handleSaveModalClose}
+				newHighlights={newHighlights}
+				removeNewHighlight={removeNewHighlight}
 			/>
 		</React.Fragment>
 	);

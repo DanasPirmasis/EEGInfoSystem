@@ -83,16 +83,16 @@ const ZoomableLineChart = (props) => {
 				[0, 0],
 				[width, height],
 			])
+			.filter(!props.isBrushSelected)
 			.on('zoom', (event) => {
-				if (!props.isBrushSelected) {
-					const zoomState = event.transform;
-					setCurrentZoomState(zoomState);
-				}
-				if (!props.isBrushSelected && event.sourceEvent.type === 'dblclick') {
+				if (event.sourceEvent.type === 'dblclick') {
 					const zoomState = event.transform;
 					zoomState.k = 1;
 					zoomState.x = 0;
 					zoomState.y = 0;
+					setCurrentZoomState(zoomState);
+				} else {
+					const zoomState = event.transform;
 					setCurrentZoomState(zoomState);
 				}
 			});
@@ -148,7 +148,13 @@ const ZoomableLineChart = (props) => {
 				if (event.selection) {
 					const indexSelection = event.selection.map(xScale.invert);
 					setSelectedArea(indexSelection);
-					console.log(indexSelection);
+					indexSelection[0] = Math.round(indexSelection[0]);
+					indexSelection[1] = Math.round(indexSelection[1]);
+
+					props.newSelectedAreaHandler({
+						signalNumber: props.signalName,
+						valueRange: indexSelection,
+					});
 				}
 
 				selection.call(brush.move, null);

@@ -12,6 +12,7 @@ const App = () => {
 	const [amplitude, setAmplitude] = useState(1000);
 	const [signalButtonClicked, setSignalButtonClicked] = useState(true);
 	const [brushSelected, setBrushSelected] = useState(false);
+	const [saveSelected, setSaveSelected] = useState(false);
 
 	const fadeToNextScreen = () => {
 		setNextScreen(true);
@@ -39,15 +40,16 @@ const App = () => {
 		setBrushSelected(brushState);
 	};
 
+	const saveHandler = (saveState) => {
+		setSaveSelected(saveState);
+	};
+
 	//Maybe I should move the modal to parent component
 	return (
 		<div>
 			<Grid container direction='row'>
 				<Grid item sx={{ flexGrow: 1 }}>
-					<DragAndDrop
-						appear={!nextScreen}
-						uploadHandler={uploadHandler}
-					/>
+					<DragAndDrop appear={!nextScreen} uploadHandler={uploadHandler} />
 				</Grid>
 				<Grid item>
 					<Login
@@ -65,6 +67,7 @@ const App = () => {
 						amplitudeHandler={amplitudeHandler}
 						signalButtonHandler={signalButtonHandler}
 						brushHandler={brushHandler}
+						saveHandler={saveHandler}
 					/>
 					<Reader
 						data={edfFile}
@@ -74,6 +77,8 @@ const App = () => {
 						signalButtonHandler={signalButtonHandler}
 						brushSelected={brushSelected}
 						brushHandler={brushHandler}
+						saveState={saveSelected}
+						saveStateHandler={saveHandler}
 					/>
 				</div>
 			)}

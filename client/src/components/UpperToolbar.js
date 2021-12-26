@@ -34,11 +34,15 @@ const UpperToolbar = (props) => {
 		props.signalButtonHandler(true);
 	};
 
-	const brushHandler = (e) => {
+	const brushHandler = () => {
 		props.brushHandler(brushColor === '#FFFFFF' ? true : false);
 		setBrushColor((brushColor) =>
 			brushColor === '#FFFFFF' ? '#585CD2' : '#FFFFFF'
 		);
+	};
+
+	const saveHandler = () => {
+		props.saveHandler(true);
 	};
 
 	return (
@@ -53,6 +57,15 @@ const UpperToolbar = (props) => {
 						<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
 							EEG WebReader
 						</Typography>
+						<Button
+							size='small'
+							variant='outlined'
+							color='inherit'
+							sx={{ marginRight: '1rem' }}
+							onClick={saveHandler}
+						>
+							Save hightlight
+						</Button>
 						<IconButton onClick={brushHandler}>
 							<BrushIcon
 								sx={{ color: brushColor }}
