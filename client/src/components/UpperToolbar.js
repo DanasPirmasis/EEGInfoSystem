@@ -47,15 +47,10 @@ const UpperToolbar = (props) => {
 			timeout={1000}
 			addEndListener={props.animationFinishedHandler}
 		>
-			{/* sx={{ backgroundColor: '#121212' }} */}
-			<Box sx={{ flexGrow: 1 }}>
-				<AppBar sx={{ backgroundColor: '#121212', position: 'sticky' }}>
-					<Toolbar>
-						<Typography
-							variant='h6'
-							component='div'
-							sx={{ flexGrow: 1 }}
-						>
+			<AppBar sx={{ backgroundColor: '#121212', position: 'sticky' }}>
+				<Toolbar>
+					<Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+						<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
 							EEG WebReader
 						</Typography>
 						<IconButton onClick={brushHandler}>
@@ -69,6 +64,7 @@ const UpperToolbar = (props) => {
 							variant='filled'
 							size='small'
 							sx={{
+								marginRight: '1rem',
 								backgroundColor: 'white',
 							}}
 						>
@@ -86,33 +82,28 @@ const UpperToolbar = (props) => {
 								<MenuItem value={10000}>10000 uV</MenuItem>
 							</Select>
 						</FormControl>
-						<Box
-							style={{
-								marginLeft: '1rem',
+						<FormControl
+							variant='filled'
+							size='small'
+							sx={{
 								marginRight: '1rem',
+								backgroundColor: 'white',
 							}}
 						>
-							<FormControl
-								variant='filled'
-								size='small'
-								sx={{
-									backgroundColor: 'white',
-								}}
+							<InputLabel>Duration</InputLabel>
+							<Select
+								value={duration}
+								label='Duration'
+								onChange={changeDuration}
 							>
-								<InputLabel>Duration</InputLabel>
-								<Select
-									value={duration}
-									label='Duration'
-									onChange={changeDuration}
-								>
-									<MenuItem value={4}>4 seconds</MenuItem>
-									<MenuItem value={8}>8 seconds</MenuItem>
-									<MenuItem value={32}>32 seconds</MenuItem>
-									<MenuItem value={60}>60 seconds</MenuItem>
-								</Select>
-							</FormControl>
-						</Box>
+								<MenuItem value={4}>4 seconds</MenuItem>
+								<MenuItem value={8}>8 seconds</MenuItem>
+								<MenuItem value={32}>32 seconds</MenuItem>
+								<MenuItem value={60}>60 seconds</MenuItem>
+							</Select>
+						</FormControl>
 						<Button
+							size='small'
 							variant='outlined'
 							color='inherit'
 							sx={{ marginRight: '1rem' }}
@@ -120,32 +111,32 @@ const UpperToolbar = (props) => {
 						>
 							Change Signals
 						</Button>
-						<Typography sx={{ marginRight: '0.5rem' }}>
-							Guest User
-						</Typography>
+						<Button
+							size='small'
+							variant='outlined'
+							color='inherit'
+							sx={{ marginRight: '1rem' }}
+						>
+							Login
+						</Button>
+						<Button
+							size='small'
+							variant='outlined'
+							color='inherit'
+							sx={{ marginRight: '1rem' }}
+						>
+							Help
+						</Button>
+						<Typography sx={{ marginRight: '1rem' }}>Guest User</Typography>
 						<AccountCircleIcon
 							sx={{
 								transform: 'scale(1.8)',
 								marginRight: '0.5rem',
 							}}
 						></AccountCircleIcon>
-						<Button
-							variant='outlined'
-							color='inherit'
-							sx={{ marginLeft: '0.5rem' }}
-						>
-							Login
-						</Button>
-						<Button
-							variant='outlined'
-							color='inherit'
-							sx={{ marginLeft: '1rem' }}
-						>
-							Help
-						</Button>
-					</Toolbar>
-				</AppBar>
-			</Box>
+					</Box>
+				</Toolbar>
+			</AppBar>
 		</Fade>
 	);
 };
