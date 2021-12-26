@@ -19,20 +19,18 @@ const Reader = (props) => {
 	const [duration, setDuration] = useState(props.duration);
 	const [shownSignals, setShownSignals] = useState([]);
 	const [isBrushSelected, setIsBrushSelected] = useState(false);
-	const [highlightedZones, setHighlightedZones] = useState({
-		highlights: [
-			{
-				signalNumber: 'F-RF - H-RF',
-				valueRange: [256, 512],
-				comment: 'Beans',
-			},
-			{
-				signalNumber: 'H-RF - A1-RF',
-				valueRange: [718, 800],
-				comment: 'Pancakes',
-			},
-		],
-	});
+	const [highlightedZones, setHighlightedZones] = useState([
+		{
+			signalName: 'F-RF - H-RF',
+			valueRange: [256, 512],
+			comment: 'Beans',
+		},
+		{
+			signalName: 'H-RF - A1-RF',
+			valueRange: [718, 800],
+			comment: 'Pancakes',
+		},
+	]);
 	const [newHighlights, setNewHighlights] = useState([]);
 
 	const handleClose = (selectedSignals) => {
@@ -124,10 +122,26 @@ const Reader = (props) => {
 		setNewHighlights((newHighlights) => [...newHighlights, newHighlight]);
 	};
 
-	const handleSaveModalClose = (addedHighlights) => {
+	const handleNewHighlightSave = (addedHighlights) => {
+		console.log(addedHighlights);
+		addedHighlights.forEach((highlight) => {
+			let tempHighlightArray = newHighlights;
+			tempHighlightArray = tempHighlightArray.filter((val) => {
+				return val.valueRange !== highlight.valueRange;
+			});
+			setNewHighlights(tempHighlightArray);
+		});
+		let tempZones = highlightedZones;
+		addedHighlights.forEach((newAddition) => {
+			tempZones.push(newAddition);
+		});
+
+		setHighlightedZones(tempZones);
+	};
+
+	const handleSaveModalClose = () => {
 		setOpenSaveModal(false);
 		props.saveStateHandler(false);
-		//console.log(addedHighlights);
 	};
 
 	const removeNewHighlight = (highlight) => {
@@ -244,6 +258,7 @@ const Reader = (props) => {
 			<SaveModal
 				open={openSaveModal}
 				handleClose={handleSaveModalClose}
+				saveHandler={handleNewHighlightSave}
 				newHighlights={newHighlights}
 				removeNewHighlight={removeNewHighlight}
 			/>

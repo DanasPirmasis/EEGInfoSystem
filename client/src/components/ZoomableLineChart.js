@@ -107,11 +107,11 @@ const ZoomableLineChart = (props) => {
 		if (props.highlights) {
 			let backgroundSvg = document.getElementById(props.signalName);
 			let backgroundStyleString = `linear-gradient(to right, #f7f7f7 0%, `;
-			props.highlights.highlights.forEach((highlight) => {
+			props.highlights.forEach((highlight) => {
 				if (
 					highlight.valueRange[1] > props.dataRange[0] &&
 					highlight.valueRange[0] < props.dataRange[1] &&
-					highlight.signalNumber === props.signalName
+					highlight.signalName === props.signalName
 				) {
 					let highlightWidth =
 						highlight.valueRange[1] - highlight.valueRange[0];
@@ -152,7 +152,7 @@ const ZoomableLineChart = (props) => {
 					indexSelection[1] = Math.round(indexSelection[1]);
 
 					props.newSelectedAreaHandler({
-						signalNumber: props.signalName,
+						signalName: props.signalName,
 						valueRange: indexSelection,
 					});
 				}

@@ -8,9 +8,15 @@ const SaveModal = (props) => {
 
 	const closeHandler = () => {
 		props.handleClose();
-
 		setApprovedIndexes([]);
 		setApprovedHighlights([]);
+	};
+
+	const saveHandler = () => {
+		props.saveHandler(approvedHighlights);
+		setApprovedIndexes([]);
+		setApprovedHighlights([]);
+		props.handleClose();
 	};
 
 	const addHighlight = (highlight, index) => {
@@ -77,7 +83,7 @@ const SaveModal = (props) => {
 								{index + 1}
 							</Typography>
 							<Typography style={{ marginLeft: '1rem' }} sx={{ flexGrow: 1 }}>
-								{highlight.signalNumber +
+								{highlight.signalName +
 									' Range: ' +
 									highlight.valueRange[0] +
 									' - ' +
@@ -93,10 +99,25 @@ const SaveModal = (props) => {
 					);
 				})}
 				{approvedIndexes.length > 0 && (
-					<Paper style={{ marginTop: '0.5rem' }}>
-						<Typography>
-							Approved highlights: {approvedIndexes.toString()}
+					<Paper
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							marginTop: '0.5rem',
+							justifyContent: 'space-between',
+						}}
+					>
+						<Typography style={{ marginLeft: '0.5rem' }}>
+							Approved highlights numbers: {approvedIndexes.toString()}
 						</Typography>
+						<Button
+							size='small'
+							style={{ margin: '0.2rem' }}
+							variant='outlined'
+							onClick={saveHandler}
+						>
+							Save
+						</Button>
 					</Paper>
 				)}
 
