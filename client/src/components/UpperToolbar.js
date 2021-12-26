@@ -45,6 +45,14 @@ const UpperToolbar = (props) => {
 		props.saveHandler(true);
 	};
 
+	const openSettings = () => {
+		props.settingsHandler(true);
+	};
+
+	const loginHandler = () => {
+		props.loginHandler(true);
+	};
+
 	return (
 		<Fade
 			in={props.appear}
@@ -129,6 +137,7 @@ const UpperToolbar = (props) => {
 							variant='outlined'
 							color='inherit'
 							sx={{ marginRight: '1rem' }}
+							onClick={loginHandler}
 						>
 							Login
 						</Button>
@@ -140,13 +149,17 @@ const UpperToolbar = (props) => {
 						>
 							Help
 						</Button>
-						<Typography sx={{ marginRight: '1rem' }}>Guest User</Typography>
-						<AccountCircleIcon
-							sx={{
-								transform: 'scale(1.8)',
-								marginRight: '0.5rem',
-							}}
-						></AccountCircleIcon>
+						{props.userData && (
+							<IconButton onClick={openSettings}>
+								<AccountCircleIcon
+									sx={{
+										transform: 'scale(1.8)',
+										marginRight: '0.5rem',
+										color: '#FFFFFF',
+									}}
+								></AccountCircleIcon>
+							</IconButton>
+						)}
 					</Box>
 				</Toolbar>
 			</AppBar>

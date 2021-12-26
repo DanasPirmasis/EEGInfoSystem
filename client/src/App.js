@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import UpperToolbar from './components/UpperToolbar';
 import Login from './components/Login';
 import Reader from './components/Reader';
 import { Grid } from '@mui/material';
 import DragAndDrop from './components/DragAndDrop';
+import SettingsModal from './components/SettingsModal';
+import LoginModal from './components/LoginModal';
 
 const App = () => {
 	const [nextScreen, setNextScreen] = useState(false);
@@ -13,6 +15,10 @@ const App = () => {
 	const [signalButtonClicked, setSignalButtonClicked] = useState(true);
 	const [brushSelected, setBrushSelected] = useState(false);
 	const [saveSelected, setSaveSelected] = useState(false);
+	const [openSettings, setOpenSettings] = useState(false);
+	const [openLogin, setOpenLogin] = useState(false);
+	const [userData, setUserData] = useState();
+	const [userFiles, setUserFiles] = useState([]);
 
 	const fadeToNextScreen = () => {
 		setNextScreen(true);
@@ -44,9 +50,17 @@ const App = () => {
 		setSaveSelected(saveState);
 	};
 
+	const settingsHandler = (settingsState) => {
+		setOpenSettings(settingsState);
+	};
+
+	const loginHandler = (loginState) => {
+		setOpenLogin(loginState);
+	};
+
 	//Maybe I should move the modal to parent component
 	return (
-		<div>
+		<React.Fragment>
 			<Grid container direction='row'>
 				<Grid item sx={{ flexGrow: 1 }}>
 					<DragAndDrop appear={!nextScreen} uploadHandler={uploadHandler} />
@@ -68,6 +82,9 @@ const App = () => {
 						signalButtonHandler={signalButtonHandler}
 						brushHandler={brushHandler}
 						saveHandler={saveHandler}
+						settingsHandler={settingsHandler}
+						userData={userData}
+						loginHandler={loginHandler}
 					/>
 					<Reader
 						data={edfFile}
@@ -82,7 +99,14 @@ const App = () => {
 					/>
 				</div>
 			)}
-		</div>
+			<SettingsModal
+				open={openSettings}
+				settingsHandler={settingsHandler}
+				userData={userData}
+				userFiles={userFiles}
+			/>
+			<LoginModal open={openLogin} loginHandler={loginHandler} />
+		</React.Fragment>
 	);
 };
 
