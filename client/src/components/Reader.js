@@ -8,7 +8,8 @@ import ZoomableLineChart from './ZoomableLineChart';
 const Reader = (props) => {
 	const [selectedDataArray, setSelectedDataArray] = useState([]);
 	const [shownDataInterval, setShownDataInterval] = useState(
-		props.duration * 128
+		(props.duration * props.data._header.signalInfo[0].nbOfSamples) /
+			props.data._header.durationDataRecordsSec
 	);
 	const [time, setTime] = useState([]);
 	const [openModal, setOpenModal] = useState(props.signalButtonClicked);
@@ -82,7 +83,10 @@ const Reader = (props) => {
 	};
 
 	const changeValues = (e, data) => {
-		let currentIntervalTime = data / 128;
+		let currentIntervalTime =
+			data /
+			(file._header.signalInfo[0].nbOfSamples /
+				file._header.durationDataRecordsSec);
 		setShownDataInterval(data);
 
 		let dateChanger = new Date(file._header.recordingDate);
@@ -153,7 +157,11 @@ const Reader = (props) => {
 	};
 
 	useEffect(() => {
-		setShownDataInterval(props.duration * 128);
+		setShownDataInterval(
+			props.duration *
+				(file._header.signalInfo[0].nbOfSamples /
+					file._header.durationDataRecordsSec)
+		);
 		setDuration(props.duration);
 		setAmplitude(props.amplitude);
 		setOpenModal(props.signalButtonClicked);
@@ -191,6 +199,11 @@ const Reader = (props) => {
 		setFile(props.data);
 	}, [props.data]);
 
+	//console.log(props.data);
+	console.log(
+		file._header.signalInfo[0].nbOfSamples / file._header.durationDataRecordsSec
+	);
+
 	return (
 		<React.Fragment>
 			<div>
@@ -199,12 +212,21 @@ const Reader = (props) => {
 						{selectedDataArray.length > 0 && (
 							<Slider
 								value={shownDataInterval}
-								step={128}
-								min={props.duration * 128}
+								step={
+									file._header.signalInfo[0].nbOfSamples /
+									file._header.durationDataRecordsSec
+								}
+								min={
+									props.duration *
+									(file._header.signalInfo[0].nbOfSamples /
+										file._header.durationDataRecordsSec)
+								}
 								max={
 									selectedDataArray[0]
 										? selectedDataArray[0].length
-										: props.duration * 128
+										: props.duration *
+										  (file._header.signalInfo[0].nbOfSamples /
+												file._header.durationDataRecordsSec)
 								}
 								size='medium'
 								onChange={changeValues}
@@ -215,13 +237,23 @@ const Reader = (props) => {
 						{selectedDataArray.map((signal, index) => (
 							<ZoomableLineChart
 								data={signal.slice(
-									shownDataInterval - props.duration * 128,
+									shownDataInterval -
+										props.duration *
+											(file._header.signalInfo[0].nbOfSamples /
+												file._header.durationDataRecordsSec),
 									shownDataInterval
 								)}
 								dataRange={[
-									shownDataInterval - props.duration * 128,
+									shownDataInterval -
+										props.duration *
+											(file._header.signalInfo[0].nbOfSamples /
+												file._header.durationDataRecordsSec),
 									shownDataInterval,
 								]}
+								hertzRate={
+									file._header.signalInfo[0].nbOfSamples /
+									file._header.durationDataRecordsSec
+								}
 								dimensionCallback={dimensionsOfChild}
 								numberOfSignals={selectedDataArray.length}
 								signalName={shownSignals[index]}

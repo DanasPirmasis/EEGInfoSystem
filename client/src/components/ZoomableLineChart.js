@@ -21,6 +21,7 @@ const ZoomableLineChart = (props) => {
 	const [selectedArea, setSelectedArea] = useState();
 
 	useEffect(() => {
+		console.log(props.data.length);
 		const svg = select(svgRef.current);
 		const svgContent = svg.select('.content');
 		const { width, height } =
@@ -53,7 +54,7 @@ const ZoomableLineChart = (props) => {
 
 		let tickValues = [];
 
-		for (let i = 0; i < props.data.length; i = i + 128) {
+		for (let i = 0; i < props.data.length; i = i + props.hertzRate) {
 			if (i !== 0) {
 				tickValues.push(i - 1);
 			} else {
