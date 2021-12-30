@@ -8,6 +8,7 @@ const edfdecoder = require('edfdecoder');
 const baseStyle = {
 	flex: 1,
 	display: 'flex',
+	height: '100vh',
 	flexDirection: 'column',
 	alignItems: 'center',
 	justifyContent: 'center',
@@ -18,12 +19,8 @@ const baseStyle = {
 	transition: 'border .24s ease-in-out',
 };
 
-const activeStyle = {
-	borderColor: '#2196f3',
-};
-
 const acceptStyle = {
-	borderColor: '#00e676',
+	backgroundColor: '#00e676',
 };
 
 const rejectStyle = {
@@ -32,7 +29,9 @@ const rejectStyle = {
 
 const DragAndDrop = (props) => {
 	const [text, setText] = useState('Drag or click to upload an EDF file');
-
+	const [isEdf, setIsEdf] = useState(false);
+	const [isOtherFileType, setIsOtherFileType] = useState(false);
+	//Because
 	const onDrop = (acceptedFiles) => {
 		acceptedFiles.forEach((file) => {
 			const reader = new FileReader();
@@ -48,17 +47,19 @@ const DragAndDrop = (props) => {
 		});
 	};
 
-	const {
-		getRootProps,
-		getInputProps,
-		isDragActive,
-		isDragAccept,
-		isDragReject,
-	} = useDropzone({
+	const { getRootProps, getInputProps } = useDropzone({
 		onDrop,
-		accept: '.edf',
 		maxFiles: 1,
 		maxFileSize: 100,
+		onDragEnter: (e) => {
+			if (e.dataTransfer.items[0].type.length === 0) {
+				setIsEdf(true);
+			} else setIsOtherFileType(true);
+		},
+		onDragLeave: () => {
+			setIsEdf(false);
+			setIsOtherFileType(false);
+		},
 		onDropRejected: () => {
 			textHandler();
 		},
@@ -70,7 +71,6 @@ const DragAndDrop = (props) => {
 			decoder.setInput(file);
 			decoder.decode();
 			const output = decoder.getOutput();
-			console.log(output);
 			return output;
 		} catch (error) {
 			console.log(error);
@@ -80,11 +80,10 @@ const DragAndDrop = (props) => {
 	const style = useMemo(
 		() => ({
 			...baseStyle,
-			...(isDragActive ? activeStyle : {}),
-			...(isDragAccept ? acceptStyle : {}),
-			...(isDragReject ? rejectStyle : {}),
+			...(isEdf ? acceptStyle : {}),
+			...(isOtherFileType ? rejectStyle : {}),
 		}),
-		[isDragActive, isDragReject, isDragAccept]
+		[isEdf, isOtherFileType]
 	);
 
 	const textHandler = async () => {
@@ -99,19 +98,11 @@ const DragAndDrop = (props) => {
 			timeout={{ enter: 0, exit: 200 }}
 			unmountOnExit={true}
 		>
-			<section
-				style={{
-					display: 'flex',
-					flexDirection: 'row',
-					minHeight: '100vh',
-				}}
-			>
-				<div {...getRootProps({ style })}>
-					<input {...getInputProps()} />
-					<FileUploadIcon fontSize="large" />
-					<Typography>{text}</Typography>
-				</div>
-			</section>
+			<div {...getRootProps({ style })}>
+				<input {...getInputProps()} />
+				<FileUploadIcon fontSize='large' />
+				<Typography>{text}</Typography>
+			</div>
 		</Fade>
 	);
 };
