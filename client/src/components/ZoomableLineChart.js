@@ -180,7 +180,7 @@ const ZoomableLineChart = (props) => {
 				<svg
 					className={'svg1'}
 					id={props.signalName}
-					style={{ height: 89 / props.numberOfSignals + 'vh' }}
+					style={{ height: 100 / props.numberOfSignals + 'vh' }}
 					ref={svgRef}
 				>
 					<defs>

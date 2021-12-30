@@ -15,6 +15,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BrushIcon from '@mui/icons-material/Brush';
 import { useState } from 'react';
 
+const edfdecoder = require('edfdecoder');
+
 const UpperToolbar = (props) => {
 	const [duration, setDuration] = useState(8);
 	const [amplitude, setAmplitude] = useState(1000);
@@ -32,6 +34,35 @@ const UpperToolbar = (props) => {
 
 	const signalChangeHandler = () => {
 		props.signalButtonHandler(true);
+	};
+
+	const fileChangeHandler = (e) => {
+		//console.log(e.target.files[0]);
+		const file = e.target.files[0];
+		const reader = new FileReader();
+
+		reader.onabort = () => console.log('file reading was aborted');
+		reader.onerror = () => console.log('file reading has failed');
+		reader.onload = () => {
+			const binaryStr = reader.result;
+			const outputFile = decodeEdfFile(binaryStr);
+			props.uploadHandler(outputFile);
+		};
+		reader.readAsArrayBuffer(file);
+		//console.log(outputFile);
+	};
+
+	const decodeEdfFile = (file) => {
+		try {
+			const decoder = new edfdecoder.EdfDecoder();
+			decoder.setInput(file);
+			decoder.decode();
+			const output = decoder.getOutput();
+			console.log(output);
+			return output;
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const brushHandler = () => {
@@ -123,6 +154,24 @@ const UpperToolbar = (props) => {
 								<MenuItem value={60}>60 seconds</MenuItem>
 							</Select>
 						</FormControl>
+
+						<input
+							accept='.edf'
+							style={{ display: 'none' }}
+							id='raised-button-file'
+							type='file'
+							onInput={fileChangeHandler}
+						/>
+						<label style={{ marginRight: '1rem' }} htmlFor='raised-button-file'>
+							<Button
+								size='small'
+								color='inherit'
+								variant='outlined'
+								component='span'
+							>
+								Change file
+							</Button>
+						</label>
 						<Button
 							size='small'
 							variant='outlined'

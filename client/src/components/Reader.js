@@ -1,5 +1,5 @@
 import { Grid, Slider } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import MontageModal from './MontageModal';
 import SaveModal from './SaveModal';
 import TimeBar from './TimeBar';
@@ -32,6 +32,7 @@ const Reader = (props) => {
 		},
 	]);
 	const [newHighlights, setNewHighlights] = useState([]);
+	const [file, setFile] = useState(props.data);
 
 	const handleClose = (selectedSignals) => {
 		setSelectedDataArray([]);
@@ -41,9 +42,8 @@ const Reader = (props) => {
 		let signalNumberArray = [];
 		for (let i = 0; i < selectedSignals.length; i++) {
 			let signal = selectedSignals[i].split(' - ');
-			for (let j = 0; j < props.data._header.signalInfo.length; j++) {
-				let headerSignalLabels =
-					props.data._header.signalInfo[j].label.toLowerCase();
+			for (let j = 0; j < file._header.signalInfo.length; j++) {
+				let headerSignalLabels = file._header.signalInfo[j].label.toLowerCase();
 				if (
 					headerSignalLabels === signal[0].toLowerCase() ||
 					headerSignalLabels === signal[1].toLowerCase()
@@ -66,11 +66,11 @@ const Reader = (props) => {
 	};
 
 	const flattenAndSubtract = (firstSignal, secondSignal) => {
-		let firstSignalData = props.data._physicalSignals[firstSignal];
-		let secondSignalData = props.data._physicalSignals[secondSignal];
+		let firstSignalData = file._physicalSignals[firstSignal];
+		let secondSignalData = file._physicalSignals[secondSignal];
 		let derivation = [];
 
-		if (props.data) {
+		if (file) {
 			for (let i = 0; i < firstSignalData.length; i++) {
 				for (let j = 0; j < firstSignalData[i].length; j++) {
 					derivation.push(secondSignalData[i][j] - firstSignalData[i][j]);
@@ -85,7 +85,7 @@ const Reader = (props) => {
 		let currentIntervalTime = data / 128;
 		setShownDataInterval(data);
 
-		let dateChanger = new Date(props.data._header.recordingDate);
+		let dateChanger = new Date(file._header.recordingDate);
 
 		if (dateChanger < 0) {
 			dateChanger.setFullYear(1970);
@@ -185,6 +185,12 @@ const Reader = (props) => {
 		props.saveState,
 	]);
 
+	useMemo(() => {
+		setOpenModal(true);
+		setSelectedDataArray([]);
+		setFile(props.data);
+	}, [props.data]);
+
 	return (
 		<React.Fragment>
 			<div>
@@ -253,7 +259,7 @@ const Reader = (props) => {
 			<MontageModal
 				open={openModal}
 				handleClose={handleClose}
-				signals={props.data._header.signalInfo}
+				signals={file._header.signalInfo}
 			/>
 			<SaveModal
 				open={openSaveModal}

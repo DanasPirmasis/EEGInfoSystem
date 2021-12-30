@@ -1,11 +1,11 @@
 import { Modal, Typography, Box, Button } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const MontageModal = (props) => {
 	const [selectedSignals, setSelectedSignals] = useState([]);
 	const [selectedSignalsLength, setSelectedSignalsLength] = useState(0);
-	//Weird solution probably should fix it LOL!
-	//selectSignal and removeSignal probably have lots of spaghet, this logic should be revisited!
+	const [signals, setSignals] = useState([]);
+
 	const selectSignal = async (e) => {
 		if (selectedSignalsLength === 0 || selectedSignalsLength % 2 === 0) {
 			setSelectedSignals((selectedSignals) => [
@@ -38,12 +38,16 @@ const MontageModal = (props) => {
 		props.handleClose(selectedSignals);
 	};
 
+	useEffect(() => {
+		setSelectedSignals([]);
+		setSelectedSignalsLength(0);
+		setSignals(props.signals);
+	}, [props.signals]);
+
 	return (
 		<Modal
 			open={props.open}
 			onClose={closeHandler}
-			aria-labelledby="modal-modal-title"
-			aria-describedby="modal-modal-description"
 			style={{
 				display: 'flex',
 				alignItems: 'center',
@@ -60,7 +64,7 @@ const MontageModal = (props) => {
 					bgcolor: 'background.paper',
 				}}
 			>
-				<Typography id="modal-modal-title" variant="h6" component="h2">
+				<Typography variant='h6' component='h2'>
 					Choose signals for a montage
 				</Typography>
 				<div
@@ -73,7 +77,7 @@ const MontageModal = (props) => {
 						paddingBottom: '10px',
 					}}
 				>
-					<Typography id="modal-modal-description">Choose signals</Typography>
+					<Typography id='modal-modal-description'>Choose signals</Typography>
 					<Typography sx={{ paddingRight: '6.3vw' }}>Derivation</Typography>
 				</div>
 				<div
@@ -97,7 +101,7 @@ const MontageModal = (props) => {
 							overflow: 'auto',
 						}}
 					>
-						{props.signals.map((signal) => (
+						{signals.map((signal) => (
 							<li
 								style={{ listStyleType: 'none', maxWidth: '7vw' }}
 								key={signal.label}

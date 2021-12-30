@@ -85,6 +85,7 @@ const App = () => {
 						settingsHandler={settingsHandler}
 						userData={userData}
 						loginHandler={loginHandler}
+						uploadHandler={uploadHandler}
 					/>
 					<Reader
 						data={edfFile}
