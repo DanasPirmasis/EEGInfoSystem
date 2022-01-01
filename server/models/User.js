@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+const Schema = mongoose.Schema;
+
 const UserSchema = new mongoose.Schema({
 	email: {
 		type: String,
@@ -19,6 +21,12 @@ const UserSchema = new mongoose.Schema({
 		maxlength: [64, 'Password is too long'],
 		select: false,
 	},
+	fileIds: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'edfFiles.files',
+		},
+	],
 });
 
 UserSchema.pre('save', async function (next) {

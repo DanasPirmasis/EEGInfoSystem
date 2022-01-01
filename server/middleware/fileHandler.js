@@ -2,7 +2,6 @@ import { GridFsStorage } from 'multer-gridfs-storage';
 import multer from 'multer';
 import dotenv from 'dotenv';
 import ErrorResponse from '../utils/errorResponse.js';
-import crypto from 'crypto';
 import mongoose from 'mongoose';
 import path from 'path';
 
@@ -45,20 +44,56 @@ const store = multer({
 	},
 });
 
-const uploadMiddleware = (req, res, next) => {
+export const uploadMiddleware = (req, res, next) => {
 	const upload = store.single('file');
 
 	upload(req, res, function (err) {
 		if (err instanceof multer.MulterError) {
-			return next(new ErrorResponse('File too large'));
+			return next(new ErrorResponse('File too large', 500));
 		} else if (err) {
 			if (err === 'filetype')
-				return next(new ErrorResponse('Only EDF files allowed'));
-			return new ErrorResponse(err);
+				return next(new ErrorResponse('Only EDF files allowed', 500));
+			return new next(ErrorResponse(err, 500));
 		}
 		next();
-		conn.close();
 	});
 };
 
-export default uploadMiddleware;
+export const downloadMiddleware = (req, res, next) => {
+	try {
+		const { id } = req.body;
+
+		if (!id) return next(new ErrorResponse('File id was not provided', 400));
+
+		const _id = new mongoose.Types.ObjectId(id);
+
+		gfs.find({ _id }).toArray((err, files) => {
+			if (!files || files.length === 0)
+				return next(new ErrorResponse('No files found', 400));
+			gfs.openDownloadStream(_id).pipe(res);
+		});
+	} catch (error) {
+		console.error(error);
+	}
+};
+
+export const highlightMiddleware = (req, res, next) => {
+	try {
+		const { highlights, fileId, email } = req.body;
+
+		const _id = mongoose.Types.ObjectId(fileId);
+		if (!highlights)
+			return next(new ErrorResponse('No highlights provided', 400));
+		if (!fileId) return next(new ErrorResponse('No File Id provided', 400));
+		if (!email) return next(new ErrorResponse('No Email provided', 400));
+
+		gfs.find({ _id }).toArray((err, files) => {
+			if (!files || files.length === 0)
+				return next(new ErrorResponse('No files found', 400));
+
+			next();
+		});
+	} catch (error) {
+		return next(new ErrorResponse(error, 500));
+	}
+};
