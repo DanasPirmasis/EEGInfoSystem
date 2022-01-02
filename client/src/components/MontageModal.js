@@ -1,6 +1,7 @@
 import { Modal, Typography, Box, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useState } from 'react';
 
 const MontageModal = (props) => {
@@ -45,6 +46,10 @@ const MontageModal = (props) => {
 
 	const removeSignal = (i) => {
 		const swapArray = [...selectedSignals];
+		console.log(i);
+		if (i + 1 === swapArray.length) {
+			setSignSelectionMode(0);
+		}
 		swapArray.splice(i, 1);
 		setSelectedSignals(swapArray);
 	};
@@ -81,9 +86,21 @@ const MontageModal = (props) => {
 					bgcolor: 'background.paper',
 				}}
 			>
-				<Typography variant='h6' component='h2'>
-					Choose signals for a montage
-				</Typography>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						alignItems: 'center',
+					}}
+				>
+					<Typography variant='h6' component='h2'>
+						Choose signals for a montage
+					</Typography>
+					<IconButton onClick={closeHandler}>
+						<CloseIcon htmlColor='black' fontSize='large' />
+					</IconButton>
+				</div>
 				<div
 					style={{
 						display: 'flex',
@@ -128,19 +145,37 @@ const MontageModal = (props) => {
 										{signal.label}
 									</Button>
 								)}
-								{signal.label === 'No signals found' && <p>{signal.label}</p>}
+								{signal.label === 'No signals found' && (
+									<p key={'none'}>{signal.label}</p>
+								)}
 							</li>
 						))}
 					</div>
 					<div
-						style={{ display: 'flex', flexDirection: 'column', margin: 'auto' }}
+						style={{
+							display: 'flex',
+							flexDirection: 'column',
+						}}
 					>
-						<IconButton onClick={selectPlusSign}>
+						<IconButton
+							style={{ marginTop: 'auto', marginBottom: 'auto' }}
+							onClick={selectPlusSign}
+						>
 							<AddIcon color='primary' fontSize='large' />
 						</IconButton>
-						<IconButton onClick={selectMinusSign}>
+						<IconButton
+							style={{ marginTop: 'auto', marginBottom: 'auto' }}
+							onClick={selectMinusSign}
+						>
 							<RemoveIcon color='primary' fontSize='large' />
 						</IconButton>
+						<Button
+							variant='outlined'
+							style={{ marginTop: 'auto', marginBottom: '0.5rem' }}
+							onClick={closeHandler}
+						>
+							Make Derivation
+						</Button>
 					</div>
 
 					<div

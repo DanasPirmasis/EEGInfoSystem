@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
-import UpperToolbar from './components/UpperToolbar';
-import Login from './components/Login';
-import Reader from './components/Reader';
-import { Grid } from '@mui/material';
-import DragAndDrop from './components/DragAndDrop';
+import React, { useState, useEffect } from 'react';
 import SettingsModal from './components/SettingsModal';
 import LoginModal from './components/LoginModal';
+import { useNavigate, Route, Routes } from 'react-router-dom';
+import Home from './components/Home';
+import Reader from './components/Reader';
 
 const App = () => {
 	const [nextScreen, setNextScreen] = useState(false);
@@ -20,8 +18,10 @@ const App = () => {
 	const [userData, setUserData] = useState();
 	const [userFiles, setUserFiles] = useState([]);
 
-	const fadeToNextScreen = () => {
-		setNextScreen(true);
+	const navigate = useNavigate();
+
+	const loginHandler = () => {
+		setSignalButtonClicked(false);
 	};
 
 	const uploadHandler = (file) => {
@@ -54,52 +54,49 @@ const App = () => {
 		setOpenSettings(settingsState);
 	};
 
-	const loginHandler = (loginState) => {
+	const loginModalHandler = (loginState) => {
 		setOpenLogin(loginState);
 	};
 
-	//Maybe I should move the modal to parent component
+	useEffect(() => {
+		if (localStorage.getItem('authToken')) {
+			setSignalButtonClicked(false);
+			navigate('/Reader');
+		}
+	}, [navigate]);
+
 	return (
 		<React.Fragment>
-			<Grid container direction='row'>
-				<Grid item sx={{ flexGrow: 1 }}>
-					<DragAndDrop appear={!nextScreen} uploadHandler={uploadHandler} />
-				</Grid>
-				<Grid item>
-					<Login
-						appear={!nextScreen}
-						loginSliderHandler={fadeToNextScreen}
-					></Login>
-				</Grid>
-			</Grid>
-
-			{nextScreen && (
-				<div>
-					<UpperToolbar
-						appear={nextScreen}
-						durationHandler={durationHandler}
-						amplitudeHandler={amplitudeHandler}
-						signalButtonHandler={signalButtonHandler}
-						brushHandler={brushHandler}
-						saveHandler={saveHandler}
-						settingsHandler={settingsHandler}
-						userData={userData}
-						loginHandler={loginHandler}
-						uploadHandler={uploadHandler}
-					/>
-					<Reader
-						data={edfFile}
-						duration={duration}
-						amplitude={amplitude}
-						signalButtonClicked={signalButtonClicked}
-						signalButtonHandler={signalButtonHandler}
-						brushSelected={brushSelected}
-						brushHandler={brushHandler}
-						saveState={saveSelected}
-						saveStateHandler={saveHandler}
-					/>
-				</div>
-			)}
+			<Routes>
+				<Route
+					path='/'
+					element={
+						<Home uploadHandler={uploadHandler} loginHandler={loginHandler} />
+					}
+				/>
+				<Route
+					path='/Reader'
+					element={
+						<Reader
+							durationHandler={durationHandler}
+							amplitudeHandler={amplitudeHandler}
+							signalButtonHandler={signalButtonHandler}
+							brushHandler={brushHandler}
+							saveHandler={saveHandler}
+							settingsHandler={settingsHandler}
+							userData={userData}
+							loginHandler={loginModalHandler}
+							uploadHandler={uploadHandler}
+							edfFile={edfFile}
+							duration={duration}
+							amplitude={amplitude}
+							signalButtonClicked={signalButtonClicked}
+							brushSelected={brushSelected}
+							saveState={saveSelected}
+						/>
+					}
+				/>
+			</Routes>
 			<SettingsModal
 				open={openSettings}
 				settingsHandler={settingsHandler}

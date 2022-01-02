@@ -1,7 +1,7 @@
 import { useDropzone } from 'react-dropzone';
 import { useState, useMemo } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { Fade, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 const edfdecoder = require('edfdecoder');
 
@@ -93,17 +93,11 @@ const DragAndDrop = (props) => {
 	};
 
 	return (
-		<Fade
-			in={props.appear}
-			timeout={{ enter: 0, exit: 200 }}
-			unmountOnExit={true}
-		>
-			<div {...getRootProps({ style })}>
-				<input {...getInputProps()} />
-				<FileUploadIcon fontSize='large' />
-				<Typography>{text}</Typography>
-			</div>
-		</Fade>
+		<div {...getRootProps({ style })}>
+			<input {...getInputProps()} />
+			<FileUploadIcon fontSize='large' />
+			<Typography>{text}</Typography>
+		</div>
 	);
 };
 
