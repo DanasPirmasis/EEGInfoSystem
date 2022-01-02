@@ -41,7 +41,9 @@ const MontageModal = (props) => {
 	useEffect(() => {
 		setSelectedSignals([]);
 		setSelectedSignalsLength(0);
-		setSignals(props.signals);
+		if (props.signals._header !== undefined)
+			setSignals(props.signals._header.signalInfo);
+		else setSignals([{ label: 'No signals found' }]);
 	}, [props.signals]);
 
 	return (
@@ -59,6 +61,7 @@ const MontageModal = (props) => {
 					display: 'flex',
 					flexDirection: 'column',
 					width: '45vw',
+					height: '45vh',
 					border: '1px solid #000',
 					boxShadow: 12,
 					bgcolor: 'background.paper',
@@ -85,6 +88,7 @@ const MontageModal = (props) => {
 						display: 'flex',
 						flexWrap: 'wrap',
 						justifyContent: 'space-between',
+						height: '100%',
 					}}
 				>
 					<div
@@ -92,7 +96,7 @@ const MontageModal = (props) => {
 							display: 'flex',
 							flexWrap: 'wrap',
 							flexDirection: 'column',
-							maxHeight: '75vh',
+							height: '100%',
 							maxWidth: '15vw',
 							minWidth: '15vw',
 							border: '1px solid black',
@@ -106,9 +110,12 @@ const MontageModal = (props) => {
 								style={{ listStyleType: 'none', maxWidth: '7vw' }}
 								key={signal.label}
 							>
-								<Button onClick={selectSignal} style={{ minWidth: '7vw' }}>
-									{signal.label}
-								</Button>
+								{signal.label !== 'No signals found' && (
+									<Button onClick={selectSignal} style={{ minWidth: '7vw' }}>
+										{signal.label}
+									</Button>
+								)}
+								{signal.label === 'No signals found' && <p>{signal.label}</p>}
 							</li>
 						))}
 					</div>

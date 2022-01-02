@@ -7,10 +7,7 @@ import ZoomableLineChart from './ZoomableLineChart';
 
 const Reader = (props) => {
 	const [selectedDataArray, setSelectedDataArray] = useState([]);
-	const [shownDataInterval, setShownDataInterval] = useState(
-		(props.duration * props.data._header.signalInfo[0].nbOfSamples) /
-			props.data._header.durationDataRecordsSec
-	);
+	const [shownDataInterval, setShownDataInterval] = useState(0);
 	const [time, setTime] = useState([]);
 	const [openModal, setOpenModal] = useState(props.signalButtonClicked);
 	const [openSaveModal, setOpenSaveModal] = useState(props.saveState);
@@ -157,11 +154,16 @@ const Reader = (props) => {
 	};
 
 	useEffect(() => {
-		setShownDataInterval(
-			props.duration *
-				(file._header.signalInfo[0].nbOfSamples /
-					file._header.durationDataRecordsSec)
-		);
+		if (file._header !== undefined) {
+			setShownDataInterval(
+				props.duration *
+					(file._header.signalInfo[0].nbOfSamples /
+						file._header.durationDataRecordsSec)
+			);
+		} else {
+			setShownDataInterval(0);
+		}
+
 		setDuration(props.duration);
 		setAmplitude(props.amplitude);
 		setOpenModal(props.signalButtonClicked);
@@ -196,13 +198,11 @@ const Reader = (props) => {
 	useMemo(() => {
 		setOpenModal(true);
 		setSelectedDataArray([]);
-		setFile(props.data);
+		if (props.data) setFile(props.data);
+		else setFile([]);
 	}, [props.data]);
 
 	//console.log(props.data);
-	console.log(
-		file._header.signalInfo[0].nbOfSamples / file._header.durationDataRecordsSec
-	);
 
 	return (
 		<React.Fragment>
@@ -288,11 +288,7 @@ const Reader = (props) => {
 				)}
 			</div>
 
-			<MontageModal
-				open={openModal}
-				handleClose={handleClose}
-				signals={file._header.signalInfo}
-			/>
+			<MontageModal open={openModal} handleClose={handleClose} signals={file} />
 			<SaveModal
 				open={openSaveModal}
 				handleClose={handleSaveModalClose}
