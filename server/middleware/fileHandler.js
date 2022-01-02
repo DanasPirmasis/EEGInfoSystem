@@ -97,3 +97,17 @@ export const highlightMiddleware = (req, res, next) => {
 		return next(new ErrorResponse(error, 500));
 	}
 };
+
+export const deleteMiddleware = () => {
+	try {
+		const { fileId } = req.body;
+		if (!fileId) return next(new ErrorResponse('No File Id provided', 400));
+
+		const _id = mongoose.Types.ObjectId(fileId);
+
+		gfs.delete({ _id }, (error) => {
+			if (error) return next(new ErrorResponse('File deletion failed', 500));
+			next();
+		});
+	} catch (error) {}
+};

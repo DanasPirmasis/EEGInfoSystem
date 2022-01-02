@@ -55,3 +55,9 @@ export const uploadHighlights = async (req, res, next) => {
 		return next(new ErrorResponse(error, 500));
 	}
 };
+
+export const deleteFile = () => {
+	const { fileId } = req.body;
+
+	res.status(200).json({ success: true, fileId: fileId });
+};
