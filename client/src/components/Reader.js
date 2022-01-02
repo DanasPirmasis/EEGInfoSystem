@@ -33,6 +33,7 @@ const Reader = (props) => {
 	const [file, setFile] = useState(props.data);
 
 	const handleClose = (selectedSignals) => {
+		console.log(selectedSignals);
 		setSelectedDataArray([]);
 		setOpenModal(false);
 		setShownSignals(selectedSignals);
@@ -40,6 +41,13 @@ const Reader = (props) => {
 		let signalNumberArray = [];
 		for (let i = 0; i < selectedSignals.length; i++) {
 			let signal = selectedSignals[i].split(' - ');
+			if (signal.length === 1) {
+				signal = selectedSignals[i].split(' + ');
+				signalNumberArray.push('+');
+			} else {
+				signalNumberArray.push('-');
+			}
+			console.log(signal);
 			for (let j = 0; j < file._header.signalInfo.length; j++) {
 				let headerSignalLabels = file._header.signalInfo[j].label.toLowerCase();
 				if (
@@ -50,12 +58,17 @@ const Reader = (props) => {
 				}
 			}
 		}
+		console.log(signalNumberArray);
+		for (let i = 0; i < signalNumberArray.length; i = i + 3) {
+			let operationType = signalNumberArray[i];
+			let firstSignal = signalNumberArray[i + 1];
+			let secondSignal = signalNumberArray[i + 2];
 
-		for (let i = 0; i < signalNumberArray.length; i = i + 2) {
-			let firstSignal = signalNumberArray[i];
-			let secondSignal = signalNumberArray[i + 1];
-
-			let flatDerivedArray = flattenAndSubtract(firstSignal, secondSignal);
+			let flatDerivedArray = flattenAndSubtract(
+				operationType,
+				firstSignal,
+				secondSignal
+			);
 			setSelectedDataArray((selectedDataArray) => [
 				...selectedDataArray,
 				flatDerivedArray,
@@ -63,12 +76,18 @@ const Reader = (props) => {
 		}
 	};
 
-	const flattenAndSubtract = (firstSignal, secondSignal) => {
+	const flattenAndSubtract = (operationType, firstSignal, secondSignal) => {
 		let firstSignalData = file._physicalSignals[firstSignal];
 		let secondSignalData = file._physicalSignals[secondSignal];
 		let derivation = [];
 
-		if (file) {
+		if (operationType === '+') {
+			for (let i = 0; i < firstSignalData.length; i++) {
+				for (let j = 0; j < firstSignalData[i].length; j++) {
+					derivation.push(secondSignalData[i][j] + firstSignalData[i][j]);
+				}
+			}
+		} else {
 			for (let i = 0; i < firstSignalData.length; i++) {
 				for (let j = 0; j < firstSignalData[i].length; j++) {
 					derivation.push(secondSignalData[i][j] - firstSignalData[i][j]);

@@ -1,37 +1,52 @@
-import { Modal, Typography, Box, Button } from '@mui/material';
+import { Modal, Typography, Box, Button, IconButton } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import { useEffect, useState } from 'react';
 
 const MontageModal = (props) => {
 	const [selectedSignals, setSelectedSignals] = useState([]);
-	const [selectedSignalsLength, setSelectedSignalsLength] = useState(0);
+	const [signSelectionMode, setSignSelectionMode] = useState(0);
 	const [signals, setSignals] = useState([]);
 
-	const selectSignal = async (e) => {
-		if (selectedSignalsLength === 0 || selectedSignalsLength % 2 === 0) {
+	const selectSignal = (e) => {
+		if (signSelectionMode === 0) {
 			setSelectedSignals((selectedSignals) => [
 				...selectedSignals,
 				e.target.innerText,
 			]);
-		} else {
-			const swapArray = selectedSignals;
-			swapArray[swapArray.length - 1] =
-				swapArray[swapArray.length - 1] + ' - ' + e.target.innerText;
-			setSelectedSignals(swapArray);
+			setSignSelectionMode(1);
 		}
+		if (signSelectionMode === 2) {
+			const copyArray = [...selectedSignals];
+			copyArray[copyArray.length - 1] =
+				copyArray[copyArray.length - 1] + e.target.innerText;
+			setSelectedSignals(copyArray);
+			setSignSelectionMode(0);
+		}
+	};
 
-		const val = selectedSignalsLength + 1;
-		setSelectedSignalsLength(val);
+	const selectPlusSign = () => {
+		if (signSelectionMode === 1) {
+			const copyArray = [...selectedSignals];
+			copyArray[copyArray.length - 1] = copyArray[copyArray.length - 1] + ' + ';
+			setSelectedSignals(copyArray);
+			setSignSelectionMode(2);
+		}
+	};
+
+	const selectMinusSign = () => {
+		if (signSelectionMode === 1) {
+			const copyArray = [...selectedSignals];
+			copyArray[copyArray.length - 1] = copyArray[copyArray.length - 1] + ' - ';
+			setSelectedSignals(copyArray);
+			setSignSelectionMode(2);
+		}
 	};
 
 	const removeSignal = (i) => {
-		let lengthReducer = selectedSignalsLength - 1;
 		const swapArray = [...selectedSignals];
-		if (swapArray[i].includes(' - ')) {
-			lengthReducer--;
-		}
 		swapArray.splice(i, 1);
 		setSelectedSignals(swapArray);
-		setSelectedSignalsLength(lengthReducer);
 	};
 
 	const closeHandler = () => {
@@ -40,7 +55,7 @@ const MontageModal = (props) => {
 
 	useEffect(() => {
 		setSelectedSignals([]);
-		setSelectedSignalsLength(0);
+		setSignSelectionMode(0);
 		if (props.signals._header !== undefined)
 			setSignals(props.signals._header.signalInfo);
 		else setSignals([{ label: 'No signals found' }]);
@@ -61,7 +76,6 @@ const MontageModal = (props) => {
 					display: 'flex',
 					flexDirection: 'column',
 					width: '45vw',
-					height: '45vh',
 					border: '1px solid #000',
 					boxShadow: 12,
 					bgcolor: 'background.paper',
@@ -88,30 +102,29 @@ const MontageModal = (props) => {
 						display: 'flex',
 						flexWrap: 'wrap',
 						justifyContent: 'space-between',
-						height: '100%',
 					}}
 				>
 					<div
 						style={{
 							display: 'flex',
 							flexWrap: 'wrap',
+							maxHeight: '75vh',
 							flexDirection: 'column',
-							height: '100%',
-							maxWidth: '15vw',
-							minWidth: '15vw',
+							width: '15vw',
 							border: '1px solid black',
 							borderBottomWidth: '0px',
 							borderLeftWidth: '0px',
 							overflow: 'auto',
 						}}
 					>
-						{signals.map((signal) => (
-							<li
-								style={{ listStyleType: 'none', maxWidth: '7vw' }}
-								key={signal.label}
-							>
+						{signals.map((signal, index) => (
+							<li style={{ listStyleType: 'none', maxWidth: '7vw' }}>
 								{signal.label !== 'No signals found' && (
-									<Button onClick={selectSignal} style={{ minWidth: '7vw' }}>
+									<Button
+										onClick={selectSignal}
+										style={{ minWidth: '7vw' }}
+										key={signal.label + index}
+									>
 										{signal.label}
 									</Button>
 								)}
@@ -119,6 +132,17 @@ const MontageModal = (props) => {
 							</li>
 						))}
 					</div>
+					<div
+						style={{ display: 'flex', flexDirection: 'column', margin: 'auto' }}
+					>
+						<IconButton onClick={selectPlusSign}>
+							<AddIcon color='primary' fontSize='large' />
+						</IconButton>
+						<IconButton onClick={selectMinusSign}>
+							<RemoveIcon color='primary' fontSize='large' />
+						</IconButton>
+					</div>
+
 					<div
 						style={{
 							display: 'flex',
@@ -137,8 +161,6 @@ const MontageModal = (props) => {
 							>
 								<Button
 									onClick={(e) => {
-										e.stopPropagation();
-										e.preventDefault();
 										removeSignal(i);
 									}}
 									style={{ minWidth: '15vw' }}
