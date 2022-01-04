@@ -7,14 +7,34 @@ import {
 	InputAdornment,
 } from '@mui/material';
 
+import axios from 'axios';
 import { AccountCircle, LockRounded } from '@mui/icons-material';
+import { useRef, useState } from 'react';
 
 const LoginModal = (props) => {
+	const emailRef = useRef('');
+	const passwordRef = useRef('');
+	const [error, setError] = useState('');
+
 	const closeHandler = () => {
-		props.loginHandler(false);
+		props.loginModalHandler(false);
 	};
-	const userLoggedIn = () => {
-		console.log('user logged in');
+	const userLoggedIn = async () => {
+		try {
+			let { data } = await axios.post('/api/auth/login', {
+				email: emailRef.current.value,
+				password: passwordRef.current.value,
+			});
+
+			localStorage.setItem('token', data.token);
+			props.loginHandler(emailRef.current.value, data.fileIds);
+			props.loginModalHandler(false);
+		} catch (error) {
+			setError(error.response.data.error);
+			setTimeout(() => {
+				setError('');
+			}, 5000);
+		}
 	};
 
 	return (
@@ -41,6 +61,7 @@ const LoginModal = (props) => {
 					label='Email'
 					variant='standard'
 					margin='normal'
+					inputRef={emailRef}
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position='start'>
@@ -54,6 +75,7 @@ const LoginModal = (props) => {
 					type='password'
 					variant='standard'
 					margin='normal'
+					inputRef={passwordRef}
 					InputProps={{
 						startAdornment: (
 							<InputAdornment position='start'>
@@ -62,6 +84,7 @@ const LoginModal = (props) => {
 						),
 					}}
 				/>
+				{error && <Typography sx={{ color: 'red' }}>{error}</Typography>}
 				<Button
 					sx={{ marginTop: '20px' }}
 					variant='contained'

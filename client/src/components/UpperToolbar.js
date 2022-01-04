@@ -12,7 +12,8 @@ import {
 import Box from '@mui/material/Box';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BrushIcon from '@mui/icons-material/Brush';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const edfdecoder = require('edfdecoder');
 
@@ -20,6 +21,13 @@ const UpperToolbar = (props) => {
 	const [duration, setDuration] = useState(8);
 	const [amplitude, setAmplitude] = useState(1000);
 	const [brushColor, setBrushColor] = useState('#FFFFFF');
+
+	const navigate = useNavigate();
+
+	const logoutHandler = () => {
+		localStorage.removeItem('authToken');
+		navigate('/');
+	};
 
 	const changeDuration = (e) => {
 		setDuration(e.target.value);
@@ -36,19 +44,19 @@ const UpperToolbar = (props) => {
 	};
 
 	const fileChangeHandler = (e) => {
-		//console.log(e.target.files[0]);
 		const file = e.target.files[0];
-		const reader = new FileReader();
+		if (file) {
+			const reader = new FileReader();
 
-		reader.onabort = () => console.log('file reading was aborted');
-		reader.onerror = () => console.log('file reading has failed');
-		reader.onload = () => {
-			const binaryStr = reader.result;
-			const outputFile = decodeEdfFile(binaryStr);
-			props.uploadHandler(outputFile);
-		};
-		reader.readAsArrayBuffer(file);
-		//console.log(outputFile);
+			reader.onabort = () => console.log('file reading was aborted');
+			reader.onerror = () => console.log('file reading has failed');
+			reader.onload = () => {
+				const binaryStr = reader.result;
+				const outputFile = decodeEdfFile(binaryStr);
+				props.uploadHandler(outputFile, file);
+			};
+			reader.readAsArrayBuffer(file);
+		}
 	};
 
 	const decodeEdfFile = (file) => {
@@ -82,6 +90,12 @@ const UpperToolbar = (props) => {
 	const loginHandler = () => {
 		props.loginHandler(true);
 	};
+
+	useEffect(() => {
+		if (!localStorage.getItem('token')) {
+			navigate('/');
+		}
+	}, [navigate]);
 
 	return (
 		<AppBar sx={{ backgroundColor: '#121212', position: 'sticky' }}>
@@ -198,6 +212,17 @@ const UpperToolbar = (props) => {
 								}}
 							></AccountCircleIcon>
 						</IconButton>
+					)}
+					{props.userData && (
+						<Button
+							size='small'
+							variant='outlined'
+							color='inherit'
+							sx={{ marginRight: '1rem' }}
+							onClick={logoutHandler}
+						>
+							Logout
+						</Button>
 					)}
 				</Box>
 			</Toolbar>

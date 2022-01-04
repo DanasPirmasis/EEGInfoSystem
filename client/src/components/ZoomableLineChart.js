@@ -21,7 +21,6 @@ const ZoomableLineChart = (props) => {
 	const [selectedArea, setSelectedArea] = useState();
 
 	useEffect(() => {
-		console.log(props.data.length);
 		const svg = select(svgRef.current);
 		const svgContent = svg.select('.content');
 		const { width, height } =
@@ -79,7 +78,7 @@ const ZoomableLineChart = (props) => {
 		svg.select('.y-axis').call(yAxis);
 
 		const zoomBehavior = zoom()
-			.scaleExtent([0.1, 100])
+			.scaleExtent([0.01, 100])
 			.translateExtent([
 				[0, 0],
 				[width, height],

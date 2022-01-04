@@ -4,6 +4,8 @@ import MontageModal from './MontageModal';
 import SaveModal from './SaveModal';
 import TimeBar from './TimeBar';
 import ZoomableLineChart from './ZoomableLineChart';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const Reader = (props) => {
 	const [selectedDataArray, setSelectedDataArray] = useState([]);
@@ -21,16 +23,17 @@ const Reader = (props) => {
 		{
 			signalName: 'F-RF - H-RF',
 			valueRange: [256, 512],
-			comment: 'Beans',
 		},
 		{
 			signalName: 'H-RF - A1-RF',
 			valueRange: [718, 800],
-			comment: 'Pancakes',
 		},
 	]);
 	const [newHighlights, setNewHighlights] = useState([]);
 	const [file, setFile] = useState(props.data);
+
+	const params = useParams();
+	const navigate = useNavigate();
 
 	const handleClose = (selectedSignals) => {
 		console.log(selectedSignals);
@@ -47,7 +50,7 @@ const Reader = (props) => {
 			} else {
 				signalNumberArray.push('-');
 			}
-			console.log(signal);
+
 			for (let j = 0; j < file._header.signalInfo.length; j++) {
 				let headerSignalLabels = file._header.signalInfo[j].label.toLowerCase();
 				if (
@@ -142,8 +145,7 @@ const Reader = (props) => {
 		setNewHighlights((newHighlights) => [...newHighlights, newHighlight]);
 	};
 
-	const handleNewHighlightSave = (addedHighlights) => {
-		console.log(addedHighlights);
+	const handleNewHighlightSave = async (addedHighlights) => {
 		addedHighlights.forEach((highlight) => {
 			let tempHighlightArray = newHighlights;
 			tempHighlightArray = tempHighlightArray.filter((val) => {
@@ -157,6 +159,57 @@ const Reader = (props) => {
 		});
 
 		setHighlightedZones(tempZones);
+
+		let email = props.userData;
+		let fileId = params.id;
+
+		const headers = {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${localStorage.getItem('token')}`,
+		};
+		if (!fileId && email) {
+			const formData = new FormData();
+			formData.append('file', props.edfRealFile);
+			formData.append('email', email);
+			console.log(props.edfRealFile);
+			const fileUploadReq = await fetch('http://localhost:8000/api/v1/upload', {
+				method: 'POST',
+				headers: headers,
+				body: formData,
+			});
+			const fileUploadRes = await fileUploadReq.json();
+			console.log(fileUploadRes);
+			console.log(tempZones);
+			try {
+				await fetch('http://localhost:8000/api/v1/uploadHighlights', {
+					method: 'POST',
+					headers: headers,
+					body: JSON.stringify({
+						highlights: tempZones,
+						fileId: fileUploadRes.id,
+						email: email,
+					}),
+				});
+
+				navigate(`/Reader/${fileUploadRes.id}`);
+			} catch (error) {
+				console.log(error);
+			}
+		} else if (fileId && email) {
+			try {
+				await fetch('http://localhost:8000/api/v1/uploadHighlights', {
+					method: 'POST',
+					headers: headers,
+					body: JSON.stringify({
+						highlights: tempZones,
+						fileId: fileId,
+						email: email,
+					}),
+				});
+			} catch (error) {
+				console.error(error.response.data.error);
+			}
+		}
 	};
 
 	const handleSaveModalClose = () => {
@@ -188,7 +241,7 @@ const Reader = (props) => {
 		setOpenModal(props.signalButtonClicked);
 		setIsBrushSelected(props.brushSelected);
 		setOpenSaveModal(props.saveState);
-		console.log('a');
+
 		let childSvg = document.querySelector('.svg1');
 
 		if (childSvg !== null) {

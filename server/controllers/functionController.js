@@ -22,6 +22,7 @@ export const uploadFile = async (req, res, next) => {
 		const { email } = req.body;
 		const { file } = req;
 		const { id } = file;
+
 		const _id = mongoose.Types.ObjectId(id);
 
 		if (!email)
@@ -52,6 +53,7 @@ export const uploadHighlights = async (req, res, next) => {
 
 		res.status(200).json({ success: true });
 	} catch (error) {
+		console.log(error);
 		return next(new ErrorResponse(error, 500));
 	}
 };

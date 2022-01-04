@@ -6,8 +6,8 @@ import Home from './components/Home';
 import Reader from './components/Reader';
 
 const App = () => {
-	const [nextScreen, setNextScreen] = useState(false);
 	const [edfFile, setEdfFile] = useState([]);
+	const [edfRealFile, setEdfRealFile] = useState([]);
 	const [duration, setDuration] = useState(8);
 	const [amplitude, setAmplitude] = useState(1000);
 	const [signalButtonClicked, setSignalButtonClicked] = useState(true);
@@ -20,13 +20,19 @@ const App = () => {
 
 	const navigate = useNavigate();
 
-	const loginHandler = () => {
+	const loginHandler = (email, fileIds) => {
 		setSignalButtonClicked(false);
+		setUserData(email);
+		setUserFiles(fileIds);
 	};
 
 	const uploadHandler = (file) => {
 		setEdfFile(file);
-		setNextScreen(true);
+	};
+
+	const uploadHandlerWithFile = (file, realFile) => {
+		setEdfFile(file);
+		setEdfRealFile(realFile);
 	};
 
 	const amplitudeHandler = (amplitude) => {
@@ -71,11 +77,37 @@ const App = () => {
 				<Route
 					path='/'
 					element={
-						<Home uploadHandler={uploadHandler} loginHandler={loginHandler} />
+						<Home
+							uploadHandler={uploadHandlerWithFile}
+							loginHandler={loginHandler}
+						/>
 					}
 				/>
 				<Route
 					path='/Reader'
+					element={
+						<Reader
+							durationHandler={durationHandler}
+							amplitudeHandler={amplitudeHandler}
+							signalButtonHandler={signalButtonHandler}
+							brushHandler={brushHandler}
+							saveHandler={saveHandler}
+							settingsHandler={settingsHandler}
+							userData={userData}
+							loginHandler={loginModalHandler}
+							uploadHandler={uploadHandlerWithFile}
+							edfFile={edfFile}
+							edfRealFile={edfRealFile}
+							duration={duration}
+							amplitude={amplitude}
+							signalButtonClicked={signalButtonClicked}
+							brushSelected={brushSelected}
+							saveState={saveSelected}
+						/>
+					}
+				/>
+				<Route
+					path='/Reader/:id'
 					element={
 						<Reader
 							durationHandler={durationHandler}
@@ -102,8 +134,13 @@ const App = () => {
 				settingsHandler={settingsHandler}
 				userData={userData}
 				userFiles={userFiles}
+				uploadHandler={uploadHandler}
 			/>
-			<LoginModal open={openLogin} loginHandler={loginHandler} />
+			<LoginModal
+				open={openLogin}
+				loginHandler={loginHandler}
+				loginModalHandler={loginModalHandler}
+			/>
 		</React.Fragment>
 	);
 };

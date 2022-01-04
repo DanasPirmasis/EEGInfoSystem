@@ -2,6 +2,7 @@ import { useDropzone } from 'react-dropzone';
 import { useState, useMemo } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import { Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const edfdecoder = require('edfdecoder');
 
@@ -31,7 +32,9 @@ const DragAndDrop = (props) => {
 	const [text, setText] = useState('Drag or click to upload an EDF file');
 	const [isEdf, setIsEdf] = useState(false);
 	const [isOtherFileType, setIsOtherFileType] = useState(false);
-	//Because
+
+	const navigate = useNavigate();
+
 	const onDrop = (acceptedFiles) => {
 		acceptedFiles.forEach((file) => {
 			const reader = new FileReader();
@@ -41,7 +44,8 @@ const DragAndDrop = (props) => {
 			reader.onload = () => {
 				const binaryStr = reader.result;
 				const outputFile = decodeEdfFile(binaryStr);
-				props.uploadHandler(outputFile);
+				props.uploadHandler(outputFile, file);
+				navigate('/Reader');
 			};
 			reader.readAsArrayBuffer(file);
 		});

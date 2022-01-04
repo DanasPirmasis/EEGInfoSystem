@@ -53,7 +53,7 @@ export const uploadMiddleware = (req, res, next) => {
 		} else if (err) {
 			if (err === 'filetype')
 				return next(new ErrorResponse('Only EDF files allowed', 500));
-			return new next(ErrorResponse(err, 500));
+			return next(new ErrorResponse(err, 500));
 		}
 		next();
 	});
@@ -61,7 +61,7 @@ export const uploadMiddleware = (req, res, next) => {
 
 export const downloadMiddleware = (req, res, next) => {
 	try {
-		const { id } = req.body;
+		const { id } = req.query;
 
 		if (!id) return next(new ErrorResponse('File id was not provided', 400));
 
@@ -94,6 +94,7 @@ export const highlightMiddleware = (req, res, next) => {
 			next();
 		});
 	} catch (error) {
+		console.log(error);
 		return next(new ErrorResponse(error, 500));
 	}
 };

@@ -135,7 +135,10 @@ const MontageModal = (props) => {
 						}}
 					>
 						{signals.map((signal, index) => (
-							<li style={{ listStyleType: 'none', maxWidth: '7vw' }}>
+							<li
+								key={signal.label + index + 'li'}
+								style={{ listStyleType: 'none', maxWidth: '7vw' }}
+							>
 								{signal.label !== 'No signals found' && (
 									<Button
 										onClick={selectSignal}

@@ -20,7 +20,7 @@ router.route('/upload').post(protect, uploadMiddleware, uploadFile);
 router
 	.route('/uploadHighlights')
 	.post(protect, highlightMiddleware, uploadHighlights);
-router.route('/download').post(protect, downloadMiddleware);
+router.route('/download').get(downloadMiddleware);
 router.route('/deleteFile').delete(protect, deleteMiddleware, deleteFile);
 
 export default router;

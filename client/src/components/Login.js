@@ -25,10 +25,9 @@ const Login = (props) => {
 			});
 
 			localStorage.setItem('token', data.token);
-			props.loginHandler();
+			props.loginHandler(emailRef.current.value, data.fileIds);
 			navigate('/Reader');
 		} catch (error) {
-			console.log(error);
 			setError(error.response.data.error);
 			setTimeout(() => {
 				setError('');
