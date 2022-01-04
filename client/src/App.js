@@ -17,6 +17,7 @@ const App = () => {
 	const [openLogin, setOpenLogin] = useState(false);
 	const [userData, setUserData] = useState();
 	const [userFiles, setUserFiles] = useState([]);
+	const [highlights, setHighlights] = useState([]);
 
 	const navigate = useNavigate();
 
@@ -64,6 +65,10 @@ const App = () => {
 		setOpenLogin(loginState);
 	};
 
+	const highlightHandler = (highlights) => {
+		setHighlights(highlights);
+	};
+
 	useEffect(() => {
 		if (localStorage.getItem('authToken')) {
 			setSignalButtonClicked(false);
@@ -76,6 +81,15 @@ const App = () => {
 			<Routes>
 				<Route
 					path='/'
+					element={
+						<Home
+							uploadHandler={uploadHandlerWithFile}
+							loginHandler={loginHandler}
+						/>
+					}
+				/>
+				<Route
+					path='/register'
 					element={
 						<Home
 							uploadHandler={uploadHandlerWithFile}
@@ -103,6 +117,7 @@ const App = () => {
 							signalButtonClicked={signalButtonClicked}
 							brushSelected={brushSelected}
 							saveState={saveSelected}
+							highlights={highlights}
 						/>
 					}
 				/>
@@ -125,6 +140,7 @@ const App = () => {
 							signalButtonClicked={signalButtonClicked}
 							brushSelected={brushSelected}
 							saveState={saveSelected}
+							highlights={highlights}
 						/>
 					}
 				/>
@@ -135,6 +151,7 @@ const App = () => {
 				userData={userData}
 				userFiles={userFiles}
 				uploadHandler={uploadHandler}
+				setHighlights={highlightHandler}
 			/>
 			<LoginModal
 				open={openLogin}

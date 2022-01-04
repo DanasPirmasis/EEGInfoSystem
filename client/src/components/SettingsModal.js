@@ -25,11 +25,19 @@ const SettingsModal = (props) => {
 			const res = await fetch(url);
 			const arrayBuffer = await res.arrayBuffer();
 
+			url = new URL('http://localhost:8000/api/v1/getHighlights');
+			url.search = new URLSearchParams(params).toString();
+			const res2 = await fetch(url);
+			const json = await res2.json();
+			console.log(json);
+			props.setHighlights(json.highlights);
+
 			const decoder = new edfdecoder.EdfDecoder();
 			decoder.setInput(arrayBuffer);
 			decoder.decode();
 			const output = decoder.getOutput();
 			props.uploadHandler(output);
+			setLoadAnimation(false);
 			closeHandler();
 			navigate('/Reader/' + fileId);
 		} catch (error) {

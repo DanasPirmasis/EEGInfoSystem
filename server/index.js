@@ -17,7 +17,7 @@ app.use(
 		methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
 	})
 );
-app.use(express.json({ limit: 1000000 }));
+app.use(express.json({ limit: 104857600 }));
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/v1/', eegRouter);

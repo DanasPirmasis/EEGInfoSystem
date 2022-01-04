@@ -48,6 +48,8 @@ export const uploadMiddleware = (req, res, next) => {
 	const upload = store.single('file');
 
 	upload(req, res, function (err) {
+		console.log(err);
+
 		if (err instanceof multer.MulterError) {
 			return next(new ErrorResponse('File too large', 500));
 		} else if (err) {
@@ -97,6 +99,23 @@ export const highlightMiddleware = (req, res, next) => {
 		console.log(error);
 		return next(new ErrorResponse(error, 500));
 	}
+};
+
+export const getHightlightMiddleware = (req, res, next) => {
+	try {
+		const { id } = req.query;
+		console.log(id);
+		if (!id) return next(new ErrorResponse('File id was not provided', 400));
+
+		const _id = new mongoose.Types.ObjectId(id);
+
+		gfs.find({ _id }).toArray((err, files) => {
+			if (!files || files.length === 0)
+				return next(new ErrorResponse('No files found', 400));
+
+			next();
+		});
+	} catch (error) {}
 };
 
 export const deleteMiddleware = () => {

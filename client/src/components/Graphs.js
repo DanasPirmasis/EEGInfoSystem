@@ -19,16 +19,7 @@ const Reader = (props) => {
 	const [duration, setDuration] = useState(props.duration);
 	const [shownSignals, setShownSignals] = useState([]);
 	const [isBrushSelected, setIsBrushSelected] = useState(false);
-	const [highlightedZones, setHighlightedZones] = useState([
-		{
-			signalName: 'F-RF - H-RF',
-			valueRange: [256, 512],
-		},
-		{
-			signalName: 'H-RF - A1-RF',
-			valueRange: [718, 800],
-		},
-	]);
+	const [highlightedZones, setHighlightedZones] = useState([]);
 	const [newHighlights, setNewHighlights] = useState([]);
 	const [file, setFile] = useState(props.data);
 
@@ -36,7 +27,6 @@ const Reader = (props) => {
 	const navigate = useNavigate();
 
 	const handleClose = (selectedSignals) => {
-		console.log(selectedSignals);
 		setSelectedDataArray([]);
 		setOpenModal(false);
 		setShownSignals(selectedSignals);
@@ -61,7 +51,7 @@ const Reader = (props) => {
 				}
 			}
 		}
-		console.log(signalNumberArray);
+
 		for (let i = 0; i < signalNumberArray.length; i = i + 3) {
 			let operationType = signalNumberArray[i];
 			let firstSignal = signalNumberArray[i + 1];
@@ -163,27 +153,30 @@ const Reader = (props) => {
 		let email = props.userData;
 		let fileId = params.id;
 
-		const headers = {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${localStorage.getItem('token')}`,
-		};
 		if (!fileId && email) {
-			const formData = new FormData();
-			formData.append('file', props.edfRealFile);
-			formData.append('email', email);
-			console.log(props.edfRealFile);
-			const fileUploadReq = await fetch('http://localhost:8000/api/v1/upload', {
-				method: 'POST',
-				headers: headers,
-				body: formData,
-			});
-			const fileUploadRes = await fileUploadReq.json();
-			console.log(fileUploadRes);
-			console.log(tempZones);
 			try {
+				const formData = new FormData();
+				formData.append('file', props.edfRealFile);
+				formData.append('email', email);
+				console.log(props.edfRealFile);
+				const fileUploadReq = await fetch(
+					'http://localhost:8000/api/v1/upload',
+					{
+						method: 'POST',
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem('token')}`,
+						},
+						body: formData,
+					}
+				);
+				const fileUploadRes = await fileUploadReq.json();
+
 				await fetch('http://localhost:8000/api/v1/uploadHighlights', {
 					method: 'POST',
-					headers: headers,
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${localStorage.getItem('token')}`,
+					},
 					body: JSON.stringify({
 						highlights: tempZones,
 						fileId: fileUploadRes.id,
@@ -191,7 +184,8 @@ const Reader = (props) => {
 					}),
 				});
 
-				navigate(`/Reader/${fileUploadRes.id}`);
+				if (fileUploadRes.id !== undefined)
+					navigate(`/Reader/${fileUploadRes.id}`);
 			} catch (error) {
 				console.log(error);
 			}
@@ -199,7 +193,10 @@ const Reader = (props) => {
 			try {
 				await fetch('http://localhost:8000/api/v1/uploadHighlights', {
 					method: 'POST',
-					headers: headers,
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${localStorage.getItem('token')}`,
+					},
 					body: JSON.stringify({
 						highlights: tempZones,
 						fileId: fileId,
@@ -241,6 +238,7 @@ const Reader = (props) => {
 		setOpenModal(props.signalButtonClicked);
 		setIsBrushSelected(props.brushSelected);
 		setOpenSaveModal(props.saveState);
+		if (props.highlights.length > 0) setHighlightedZones(props.highlights);
 
 		let childSvg = document.querySelector('.svg1');
 
@@ -265,6 +263,7 @@ const Reader = (props) => {
 		props.duration,
 		props.brushSelected,
 		props.saveState,
+		props.highlights,
 	]);
 
 	useMemo(() => {

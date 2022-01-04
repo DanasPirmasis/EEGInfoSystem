@@ -8,6 +8,7 @@ const edfdecoder = require('edfdecoder');
 
 const Reader = (props) => {
 	const [loadAnimation, setLoadAnimation] = useState(false);
+	const [highlights, setHighlights] = useState([]);
 	const params = useParams();
 
 	useEffect(() => {
@@ -21,11 +22,19 @@ const Reader = (props) => {
 					const res = await fetch(url);
 					const arrayBuffer = await res.arrayBuffer();
 
+					url = new URL('http://localhost:8000/api/v1/getHighlights');
+					url.search = new URLSearchParams(reqParams).toString();
+					const res2 = await fetch(url);
+					const json = await res2.json();
+					console.log(json);
+					setHighlights(json.highlights);
+
 					const decoder = new edfdecoder.EdfDecoder();
 					decoder.setInput(arrayBuffer);
 					decoder.decode();
 					const output = decoder.getOutput();
 					props.uploadHandler(output);
+
 					setLoadAnimation(false);
 				} catch (error) {
 					setLoadAnimation(false);
@@ -62,6 +71,7 @@ const Reader = (props) => {
 					saveState={props.saveState}
 					saveStateHandler={props.saveHandler}
 					userData={props.userData}
+					highlights={props.highlights}
 				/>
 			)}
 			{loadAnimation && <div className='loader' />}

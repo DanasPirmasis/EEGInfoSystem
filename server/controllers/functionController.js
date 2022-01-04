@@ -58,6 +58,39 @@ export const uploadHighlights = async (req, res, next) => {
 	}
 };
 
+export const getHighlights = async (req, res, next) => {
+	try {
+		const { id } = req.query;
+
+		const _id = new mongoose.Types.ObjectId(id);
+		/*
+		[
+  {
+    _id: new ObjectId("61d471c91bb34244354d5d04"),
+    highlights: [ [Object] ],
+    fileId: new ObjectId("61d471c41bb34244354d5c7a"),
+    email: 'nedalape@gmail.com',
+    __v: 0
+  },
+  {
+    _id: new ObjectId("61d471cd1bb34244354d5d08"),
+    highlights: [ [Object], [Object] ],
+    fileId: new ObjectId("61d471c41bb34244354d5c7a"),
+    email: 'nedalape@gmail.com',
+    __v: 0
+  }
+]
+example
+
+		*/
+		const data = await Highlight.find({ fileId: _id });
+		console.log(data);
+		res.status(200).json({ highlights: data.id });
+	} catch (error) {
+		return next(new ErrorResponse(error, 500));
+	}
+};
+
 export const deleteFile = () => {
 	const { fileId } = req.body;
 
