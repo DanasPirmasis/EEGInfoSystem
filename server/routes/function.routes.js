@@ -6,6 +6,7 @@ import {
 	getHighlights,
 	uploadFile,
 	uploadHighlights,
+	getUserFiles,
 } from '../controllers/functionController.js';
 import {
 	uploadMiddleware,
@@ -17,7 +18,6 @@ import {
 
 const router = express.Router();
 
-router.route('/').get(eeg);
 router.route('/upload').post(protect, uploadMiddleware, uploadFile);
 router
 	.route('/uploadHighlights')
@@ -25,5 +25,6 @@ router
 router.route('/getHighlights').get(getHightlightMiddleware, getHighlights);
 router.route('/download').get(downloadMiddleware);
 router.route('/deleteFile').delete(protect, deleteMiddleware, deleteFile);
+router.route('/getUserFiles').get(protect, getUserFiles);
 
 export default router;

@@ -6,7 +6,7 @@ import './Loader.css';
 const edfdecoder = require('edfdecoder');
 
 const SettingsModal = (props) => {
-	const [files, setFiles] = useState(props.userFiles);
+	const [files, setFiles] = useState([]);
 	const [email, setEmail] = useState(props.userData);
 	const [loadAnimation, setLoadAnimation] = useState(false);
 
@@ -45,14 +45,44 @@ const SettingsModal = (props) => {
 		}
 	};
 
-	const deleteFile = () => {
-		console.log('file deleted');
+	const deleteFile = async (fileId) => {
+		try {
+			let url = new URL('http://localhost:8000/api/v1/deleteFile');
+			let params = { id: fileId };
+
+			url.search = new URLSearchParams(params).toString();
+			const res = await fetch(url, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`,
+				},
+				method: 'DELETE',
+			});
+
+			let newFileArray = files.filter((file) => {
+				return file !== fileId;
+			});
+			setFiles(newFileArray);
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	useEffect(() => {
-		setFiles(props.userFiles);
-		setEmail(props.userData);
-	}, [props.userData, props.userFiles]);
+		if (props.open) {
+			setEmail(props.userData);
+			console.log('doing this');
+			let url = new URL('http://localhost:8000/api/v1/getUserFiles');
+			let params = { email: props.userData };
+			url.search = new URLSearchParams(params).toString();
+			fetch(url, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`,
+				},
+			})
+				.then((res) => res.json())
+				.then((result) => setFiles(result.fileIds));
+		}
+	}, [props.userData, props.userFiles, props.open]);
 
 	return (
 		<Modal
@@ -83,23 +113,24 @@ const SettingsModal = (props) => {
 							Email: {email}
 						</Typography>
 						<Typography style={{ margin: '1rem' }}>Saved Files:</Typography>
-						{files.map((file) => {
-							return (
-								<Paper
-									style={{
-										margin: '1rem',
-										display: 'flex',
-										alignItems: 'center',
-									}}
-									key={file}
-								>
-									<Typography sx={{ flexGrow: 1 }}>{file}</Typography>
-									<Button onClick={() => selectFile(file)}>Select</Button>
-									<Button onClick={deleteFile}>Delete</Button>
-								</Paper>
-							);
-						})}
-						{files.length === 0 && (
+						{files &&
+							files.map((file) => {
+								return (
+									<Paper
+										style={{
+											margin: '1rem',
+											display: 'flex',
+											alignItems: 'center',
+										}}
+										key={file}
+									>
+										<Typography sx={{ flexGrow: 1 }}>{file}</Typography>
+										<Button onClick={() => selectFile(file)}>Select</Button>
+										<Button onClick={() => deleteFile(file)}>Delete</Button>
+									</Paper>
+								);
+							})}
+						{files && files.length === 0 && (
 							<Typography sx={{ flexGrow: 1 }}>No files found</Typography>
 						)}
 					</Paper>

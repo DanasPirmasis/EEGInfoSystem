@@ -115,19 +115,25 @@ export const getHightlightMiddleware = (req, res, next) => {
 
 			next();
 		});
-	} catch (error) {}
+	} catch (error) {
+		console.error(error);
+	}
 };
 
-export const deleteMiddleware = () => {
+export const deleteMiddleware = (req, res, next) => {
 	try {
-		const { fileId } = req.body;
-		if (!fileId) return next(new ErrorResponse('No File Id provided', 400));
+		const { id } = req.query;
 
-		const _id = mongoose.Types.ObjectId(fileId);
+		if (!id) return next(new ErrorResponse('No File Id provided', 400));
 
-		gfs.delete({ _id }, (error) => {
+		const _id = mongoose.Types.ObjectId(id);
+		console.log(_id);
+		gfs.delete(_id, (error) => {
+			console.log(error);
 			if (error) return next(new ErrorResponse('File deletion failed', 500));
 			next();
 		});
-	} catch (error) {}
+	} catch (error) {
+		console.error(error);
+	}
 };

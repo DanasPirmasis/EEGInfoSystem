@@ -84,15 +84,55 @@ example
 
 		*/
 		const data = await Highlight.find({ fileId: _id });
-		console.log(data);
-		res.status(200).json({ highlights: data.id });
+		let highlightArray = [];
+		data.forEach((datum) => {
+			datum.highlights.forEach((highlight) =>
+				highlightArray.push({
+					signalName: highlight.signalName,
+					valueRange: highlight.valueRange,
+				})
+			);
+		});
+		console.log(highlightArray);
+		res.status(200).json({ highlights: highlightArray });
 	} catch (error) {
 		return next(new ErrorResponse(error, 500));
 	}
 };
 
-export const deleteFile = () => {
-	const { fileId } = req.body;
+export const deleteFile = async (req, res, next) => {
+	try {
+		const { id } = req.query;
 
-	res.status(200).json({ success: true, fileId: fileId });
+		const _id = mongoose.Types.ObjectId(id);
+
+		await Highlight.deleteMany({ fileId: _id });
+
+		await User.updateOne({ fileIds: _id }, { $pull: { fileIds: _id } });
+
+		res.status(200).json({ success: true, fileId: id });
+	} catch (error) {
+		console.log(error);
+		return next(new ErrorResponse(error, 500));
+	}
+};
+
+export const getUserFiles = async (req, res, next) => {
+	try {
+		const { email } = req.query;
+
+		if (!email) {
+			return next(new ErrorResponse('Please provide email', 400));
+		}
+
+		const user = await User.findOne({ email });
+
+		if (!user) {
+			return next(new ErrorResponse('User not found', 401));
+		}
+
+		res.status(200).json({ fileIds: user.fileIds });
+	} catch (error) {
+		return next(new ErrorResponse(error, 500));
+	}
 };

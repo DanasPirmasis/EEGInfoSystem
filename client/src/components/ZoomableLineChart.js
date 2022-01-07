@@ -97,13 +97,6 @@ const ZoomableLineChart = (props) => {
 				}
 			});
 
-		//This weird code is responsible for adding highlighted zones
-		//It iterates through highlighted zones object and then creates a linear gradient.
-		//This was done because I couldn't come up with a better way of having highlighted zones
-		//If I were to do it again, I would probably try to find some d3.js methods for such functionality
-		//Perhaps d3.js Drag could keep track of all of the zones
-		//onClick would remove the zone
-		//Coloring may be a problem
 		if (props.highlights) {
 			let backgroundSvg = document.getElementById(props.signalName);
 			let backgroundStyleString = `linear-gradient(to right, #f7f7f7 0%, `;
@@ -148,8 +141,10 @@ const ZoomableLineChart = (props) => {
 				if (event.selection) {
 					const indexSelection = event.selection.map(xScale.invert);
 					setSelectedArea(indexSelection);
-					indexSelection[0] = Math.round(indexSelection[0]);
-					indexSelection[1] = Math.round(indexSelection[1]);
+					indexSelection[0] =
+						Math.round(indexSelection[0]) + props.dataRange[0];
+					indexSelection[1] =
+						Math.round(indexSelection[1]) + props.dataRange[0];
 
 					props.newSelectedAreaHandler({
 						signalName: props.signalName,
@@ -180,7 +175,7 @@ const ZoomableLineChart = (props) => {
 				<svg
 					className={'svg1'}
 					id={props.signalName}
-					style={{ height: 100 / props.numberOfSignals + 'vh' }}
+					style={{ height: 89 / props.numberOfSignals + 'vh' }}
 					ref={svgRef}
 				>
 					<defs>

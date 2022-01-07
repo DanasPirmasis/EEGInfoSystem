@@ -25,7 +25,7 @@ const UpperToolbar = (props) => {
 	const navigate = useNavigate();
 
 	const logoutHandler = () => {
-		localStorage.removeItem('authToken');
+		localStorage.removeItem('token');
 		navigate('/');
 	};
 
@@ -90,12 +90,6 @@ const UpperToolbar = (props) => {
 	const loginHandler = () => {
 		props.loginHandler(true);
 	};
-
-	useEffect(() => {
-		if (!localStorage.getItem('token')) {
-			navigate('/');
-		}
-	}, [navigate]);
 
 	return (
 		<AppBar sx={{ backgroundColor: '#121212', position: 'sticky' }}>

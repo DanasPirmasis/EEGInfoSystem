@@ -28,7 +28,6 @@ const Reader = (props) => {
 					const json = await res2.json();
 					console.log(json);
 					setHighlights(json.highlights);
-
 					const decoder = new edfdecoder.EdfDecoder();
 					decoder.setInput(arrayBuffer);
 					decoder.decode();
@@ -58,7 +57,7 @@ const Reader = (props) => {
 				loginHandler={props.loginHandler}
 				uploadHandler={props.uploadHandler}
 			/>
-			{!loadAnimation && (
+			{!loadAnimation && highlights.length === 0 && (
 				<Graphs
 					data={props.edfFile}
 					edfRealFile={props.edfRealFile}
@@ -72,6 +71,22 @@ const Reader = (props) => {
 					saveStateHandler={props.saveHandler}
 					userData={props.userData}
 					highlights={props.highlights}
+				/>
+			)}
+			{!loadAnimation && highlights.length > 0 && (
+				<Graphs
+					data={props.edfFile}
+					edfRealFile={props.edfRealFile}
+					duration={props.duration}
+					amplitude={props.amplitude}
+					signalButtonClicked={props.signalButtonClicked}
+					signalButtonHandler={props.signalButtonHandler}
+					brushSelected={props.brushSelected}
+					brushHandler={props.brushHandler}
+					saveState={props.saveState}
+					saveStateHandler={props.saveHandler}
+					userData={props.userData}
+					highlights={highlights}
 				/>
 			)}
 			{loadAnimation && <div className='loader' />}

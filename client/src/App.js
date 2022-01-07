@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import SettingsModal from './components/SettingsModal';
 import LoginModal from './components/LoginModal';
-import { useNavigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import Reader from './components/Reader';
 
@@ -16,15 +16,20 @@ const App = () => {
 	const [openSettings, setOpenSettings] = useState(false);
 	const [openLogin, setOpenLogin] = useState(false);
 	const [userData, setUserData] = useState();
-	const [userFiles, setUserFiles] = useState([]);
 	const [highlights, setHighlights] = useState([]);
-
-	const navigate = useNavigate();
 
 	const loginHandler = (email, fileIds) => {
 		setSignalButtonClicked(false);
 		setUserData(email);
-		setUserFiles(fileIds);
+	};
+
+	const loginHandlerOutside = (email, fileIds) => {
+		setEdfFile([]);
+		setEdfRealFile([]);
+		setBrushSelected(false);
+		setHighlights([]);
+		setSignalButtonClicked(false);
+		setUserData(email);
 	};
 
 	const uploadHandler = (file) => {
@@ -49,7 +54,6 @@ const App = () => {
 	};
 
 	const brushHandler = (brushState) => {
-		console.log(brushState);
 		setBrushSelected(brushState);
 	};
 
@@ -69,13 +73,6 @@ const App = () => {
 		setHighlights(highlights);
 	};
 
-	useEffect(() => {
-		if (localStorage.getItem('authToken')) {
-			setSignalButtonClicked(false);
-			navigate('/Reader');
-		}
-	}, [navigate]);
-
 	return (
 		<React.Fragment>
 			<Routes>
@@ -84,16 +81,7 @@ const App = () => {
 					element={
 						<Home
 							uploadHandler={uploadHandlerWithFile}
-							loginHandler={loginHandler}
-						/>
-					}
-				/>
-				<Route
-					path='/register'
-					element={
-						<Home
-							uploadHandler={uploadHandlerWithFile}
-							loginHandler={loginHandler}
+							loginHandler={loginHandlerOutside}
 						/>
 					}
 				/>
@@ -149,7 +137,6 @@ const App = () => {
 				open={openSettings}
 				settingsHandler={settingsHandler}
 				userData={userData}
-				userFiles={userFiles}
 				uploadHandler={uploadHandler}
 				setHighlights={highlightHandler}
 			/>

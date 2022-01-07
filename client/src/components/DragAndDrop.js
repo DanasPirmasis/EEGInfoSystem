@@ -53,6 +53,7 @@ const DragAndDrop = (props) => {
 
 	const { getRootProps, getInputProps } = useDropzone({
 		onDrop,
+		accept: '.edf',
 		maxFiles: 1,
 		maxFileSize: 100,
 		onDragEnter: (e) => {
@@ -94,6 +95,8 @@ const DragAndDrop = (props) => {
 		setText('Unsupported file type');
 		await new Promise((resolve) => setTimeout(resolve, 3000));
 		setText('Drag or click to upload an EDF file');
+		setIsEdf(false);
+		setIsOtherFileType(false);
 	};
 
 	return (

@@ -4,7 +4,6 @@ import MontageModal from './MontageModal';
 import SaveModal from './SaveModal';
 import TimeBar from './TimeBar';
 import ZoomableLineChart from './ZoomableLineChart';
-import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const Reader = (props) => {
@@ -30,7 +29,9 @@ const Reader = (props) => {
 		setSelectedDataArray([]);
 		setOpenModal(false);
 		setShownSignals(selectedSignals);
+		console.log(selectedSignals);
 		props.signalButtonHandler(false);
+
 		let signalNumberArray = [];
 		for (let i = 0; i < selectedSignals.length; i++) {
 			let signal = selectedSignals[i].split(' - ');
@@ -40,13 +41,15 @@ const Reader = (props) => {
 			} else {
 				signalNumberArray.push('-');
 			}
-
 			for (let j = 0; j < file._header.signalInfo.length; j++) {
 				let headerSignalLabels = file._header.signalInfo[j].label.toLowerCase();
-				if (
-					headerSignalLabels === signal[0].toLowerCase() ||
-					headerSignalLabels === signal[1].toLowerCase()
-				) {
+				if (headerSignalLabels === signal[0].toLowerCase()) {
+					signalNumberArray.push(j);
+				}
+			}
+			for (let j = 0; j < file._header.signalInfo.length; j++) {
+				let headerSignalLabels = file._header.signalInfo[j].label.toLowerCase();
+				if (headerSignalLabels === signal[1].toLowerCase()) {
 					signalNumberArray.push(j);
 				}
 			}
@@ -72,7 +75,17 @@ const Reader = (props) => {
 	const flattenAndSubtract = (operationType, firstSignal, secondSignal) => {
 		let firstSignalData = file._physicalSignals[firstSignal];
 		let secondSignalData = file._physicalSignals[secondSignal];
+
 		let derivation = [];
+
+		if (firstSignal === secondSignal) {
+			for (let i = 0; i < firstSignalData.length; i++) {
+				for (let j = 0; j < firstSignalData[i].length; j++) {
+					derivation.push(firstSignalData[i][j]);
+				}
+			}
+			return derivation;
+		}
 
 		if (operationType === '+') {
 			for (let i = 0; i < firstSignalData.length; i++) {
@@ -125,13 +138,12 @@ const Reader = (props) => {
 		for (let i = 0; i < a.length; i++) {
 			pos.push(a[i].getBoundingClientRect().x);
 		}
-		console.log(pos);
+
 		setTickPositions(pos);
 		setDimensions(dimensions);
 	};
 
 	const newSelectedAreaHandler = (newHighlight) => {
-		console.log(newHighlight);
 		setNewHighlights((newHighlights) => [...newHighlights, newHighlight]);
 	};
 
@@ -158,7 +170,7 @@ const Reader = (props) => {
 				const formData = new FormData();
 				formData.append('file', props.edfRealFile);
 				formData.append('email', email);
-				console.log(props.edfRealFile);
+
 				const fileUploadReq = await fetch(
 					'http://localhost:8000/api/v1/upload',
 					{
@@ -223,21 +235,12 @@ const Reader = (props) => {
 	};
 
 	useEffect(() => {
-		if (file._header !== undefined) {
-			setShownDataInterval(
-				props.duration *
-					(file._header.signalInfo[0].nbOfSamples /
-						file._header.durationDataRecordsSec)
-			);
-		} else {
-			setShownDataInterval(0);
-		}
-
 		setDuration(props.duration);
 		setAmplitude(props.amplitude);
 		setOpenModal(props.signalButtonClicked);
 		setIsBrushSelected(props.brushSelected);
 		setOpenSaveModal(props.saveState);
+
 		if (props.highlights.length > 0) setHighlightedZones(props.highlights);
 
 		let childSvg = document.querySelector('.svg1');
@@ -245,7 +248,7 @@ const Reader = (props) => {
 		if (childSvg !== null) {
 			setDimensions(childSvg.getBoundingClientRect().width);
 			setTimeout(() => {
-				let childSvgTicks = document
+				let childSvgTicks = childSvg
 					.querySelector('.grid')
 					.getElementsByClassName('tick');
 
@@ -255,7 +258,7 @@ const Reader = (props) => {
 				}
 
 				setTickPositions(pos);
-			}, 25);
+			});
 		}
 	}, [
 		props.signalButtonClicked,
@@ -269,11 +272,15 @@ const Reader = (props) => {
 	useMemo(() => {
 		setOpenModal(true);
 		setSelectedDataArray([]);
-		if (props.data) setFile(props.data);
-		else setFile([]);
+		setFile(props.data);
+		if (props.data !== undefined && props.data.length > 0) {
+			setShownDataInterval(
+				props.duration *
+					(props.data._header.signalInfo[0].nbOfSamples /
+						props.data._header.durationDataRecordsSec)
+			);
+		}
 	}, [props.data]);
-
-	//console.log(props.data);
 
 	return (
 		<React.Fragment>

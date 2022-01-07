@@ -8,6 +8,7 @@ const MontageModal = (props) => {
 	const [selectedSignals, setSelectedSignals] = useState([]);
 	const [signSelectionMode, setSignSelectionMode] = useState(0);
 	const [signals, setSignals] = useState([]);
+	const [error, setError] = useState('');
 
 	const selectSignal = (e) => {
 		if (signSelectionMode === 0) {
@@ -55,7 +56,14 @@ const MontageModal = (props) => {
 	};
 
 	const closeHandler = () => {
-		props.handleClose(selectedSignals);
+		if (signSelectionMode !== 0) {
+			setError('Please choose a valid derivation selection');
+			setTimeout(() => {
+				setError('');
+			}, 10000);
+		} else {
+			props.handleClose(selectedSignals);
+		}
 	};
 
 	useEffect(() => {
@@ -160,6 +168,7 @@ const MontageModal = (props) => {
 							flexDirection: 'column',
 						}}
 					>
+						<span style={{ color: 'red' }}>{error}</span>
 						<IconButton
 							style={{ marginTop: 'auto', marginBottom: 'auto' }}
 							onClick={selectPlusSign}
