@@ -65,7 +65,6 @@ const UpperToolbar = (props) => {
 			decoder.setInput(file);
 			decoder.decode();
 			const output = decoder.getOutput();
-			console.log(output);
 			return output;
 		} catch (error) {
 			console.log(error);

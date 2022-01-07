@@ -30,7 +30,7 @@ const SettingsModal = (props) => {
 			url.search = new URLSearchParams(params).toString();
 			const res2 = await fetch(url);
 			const json = await res2.json();
-			console.log(json);
+
 			props.setHighlights(json.highlights);
 
 			const decoder = new edfdecoder.EdfDecoder();
@@ -70,7 +70,6 @@ const SettingsModal = (props) => {
 
 	useEffect(() => {
 		if (props.open) {
-			console.log(localStorage.getItem('email'));
 			let url = new URL('http://localhost:8000/api/v1/getUserFiles');
 			let params = { email: localStorage.getItem('email') };
 			url.search = new URLSearchParams(params).toString();
@@ -81,7 +80,6 @@ const SettingsModal = (props) => {
 			})
 				.then((res) => res.json())
 				.then((result) => {
-					console.log('h');
 					setEmail(result.email);
 					setFiles(result.fileIds);
 				});
