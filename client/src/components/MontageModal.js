@@ -47,7 +47,7 @@ const MontageModal = (props) => {
 
 	const removeSignal = (i) => {
 		const swapArray = [...selectedSignals];
-		console.log(i);
+
 		if (i + 1 === swapArray.length) {
 			setSignSelectionMode(0);
 		}

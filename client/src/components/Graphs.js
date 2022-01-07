@@ -29,7 +29,7 @@ const Reader = (props) => {
 		setSelectedDataArray([]);
 		setOpenModal(false);
 		setShownSignals(selectedSignals);
-		console.log(selectedSignals);
+
 		props.signalButtonHandler(false);
 
 		let signalNumberArray = [];

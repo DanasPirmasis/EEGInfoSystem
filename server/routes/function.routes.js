@@ -6,7 +6,7 @@ import {
 	getHighlights,
 	uploadFile,
 	uploadHighlights,
-	getUserFiles,
+	getUserData,
 } from '../controllers/functionController.js';
 import {
 	uploadMiddleware,
@@ -25,6 +25,6 @@ router
 router.route('/getHighlights').get(getHightlightMiddleware, getHighlights);
 router.route('/download').get(downloadMiddleware);
 router.route('/deleteFile').delete(protect, deleteMiddleware, deleteFile);
-router.route('/getUserFiles').get(protect, getUserFiles);
+router.route('/getUserFiles').get(protect, getUserData);
 
 export default router;

@@ -26,7 +26,7 @@ const Reader = (props) => {
 					url.search = new URLSearchParams(reqParams).toString();
 					const res2 = await fetch(url);
 					const json = await res2.json();
-					console.log(json);
+
 					setHighlights(json.highlights);
 					const decoder = new edfdecoder.EdfDecoder();
 					decoder.setInput(arrayBuffer);

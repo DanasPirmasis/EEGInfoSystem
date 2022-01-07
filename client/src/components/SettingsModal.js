@@ -1,13 +1,14 @@
 import { Modal, Box, Typography, Paper, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Copy from './Copy';
 import './Loader.css';
 
 const edfdecoder = require('edfdecoder');
 
 const SettingsModal = (props) => {
 	const [files, setFiles] = useState([]);
-	const [email, setEmail] = useState(props.userData);
+	const [email, setEmail] = useState('');
 	const [loadAnimation, setLoadAnimation] = useState(false);
 
 	const navigate = useNavigate();
@@ -69,10 +70,9 @@ const SettingsModal = (props) => {
 
 	useEffect(() => {
 		if (props.open) {
-			setEmail(props.userData);
-			console.log('doing this');
+			console.log(localStorage.getItem('email'));
 			let url = new URL('http://localhost:8000/api/v1/getUserFiles');
-			let params = { email: props.userData };
+			let params = { email: localStorage.getItem('email') };
 			url.search = new URLSearchParams(params).toString();
 			fetch(url, {
 				headers: {
@@ -80,7 +80,11 @@ const SettingsModal = (props) => {
 				},
 			})
 				.then((res) => res.json())
-				.then((result) => setFiles(result.fileIds));
+				.then((result) => {
+					console.log('h');
+					setEmail(result.email);
+					setFiles(result.fileIds);
+				});
 		}
 	}, [props.userData, props.userFiles, props.open]);
 
@@ -104,7 +108,7 @@ const SettingsModal = (props) => {
 					bgcolor: 'background.paper',
 				}}
 			>
-				{props.userData && (
+				{email && (
 					<Paper>
 						<Typography
 							style={{ margin: '1rem', borderBottom: '1px solid black' }}
@@ -125,6 +129,7 @@ const SettingsModal = (props) => {
 										key={file}
 									>
 										<Typography sx={{ flexGrow: 1 }}>{file}</Typography>
+										<Copy text={`${window.location.origin}/Reader/${file}`} />
 										<Button onClick={() => selectFile(file)}>Select</Button>
 										<Button onClick={() => deleteFile(file)}>Delete</Button>
 									</Paper>

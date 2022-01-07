@@ -27,6 +27,7 @@ const LoginModal = (props) => {
 			});
 
 			localStorage.setItem('token', data.token);
+			localStorage.setItem('email', emailRef.current.value);
 			props.loginHandler(emailRef.current.value, data.fileIds);
 			props.loginModalHandler(false);
 		} catch (error) {

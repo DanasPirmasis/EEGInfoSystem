@@ -48,8 +48,6 @@ export const uploadMiddleware = (req, res, next) => {
 	const upload = store.single('file');
 
 	upload(req, res, function (err) {
-		console.log(err);
-
 		if (err instanceof multer.MulterError) {
 			return next(new ErrorResponse('File too large', 500));
 		} else if (err) {
@@ -104,7 +102,7 @@ export const highlightMiddleware = (req, res, next) => {
 export const getHightlightMiddleware = (req, res, next) => {
 	try {
 		const { id } = req.query;
-		console.log(id);
+
 		if (!id) return next(new ErrorResponse('File id was not provided', 400));
 
 		const _id = new mongoose.Types.ObjectId(id);
@@ -127,9 +125,8 @@ export const deleteMiddleware = (req, res, next) => {
 		if (!id) return next(new ErrorResponse('No File Id provided', 400));
 
 		const _id = mongoose.Types.ObjectId(id);
-		console.log(_id);
+
 		gfs.delete(_id, (error) => {
-			console.log(error);
 			if (error) return next(new ErrorResponse('File deletion failed', 500));
 			next();
 		});

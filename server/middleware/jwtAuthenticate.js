@@ -14,7 +14,7 @@ const protect = async (req, res, next) => {
 	if (!token) {
 		return next(new ErrorResponse('Unauthorized to access this route', 401));
 	}
-	console.log(token);
+
 	try {
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
 

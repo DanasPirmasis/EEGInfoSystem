@@ -93,7 +93,7 @@ example
 				})
 			);
 		});
-		console.log(highlightArray);
+
 		res.status(200).json({ highlights: highlightArray });
 	} catch (error) {
 		return next(new ErrorResponse(error, 500));
@@ -117,7 +117,7 @@ export const deleteFile = async (req, res, next) => {
 	}
 };
 
-export const getUserFiles = async (req, res, next) => {
+export const getUserData = async (req, res, next) => {
 	try {
 		const { email } = req.query;
 
@@ -131,7 +131,7 @@ export const getUserFiles = async (req, res, next) => {
 			return next(new ErrorResponse('User not found', 401));
 		}
 
-		res.status(200).json({ fileIds: user.fileIds });
+		res.status(200).json({ email: user.email, fileIds: user.fileIds });
 	} catch (error) {
 		return next(new ErrorResponse(error, 500));
 	}

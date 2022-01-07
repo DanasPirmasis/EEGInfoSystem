@@ -20,7 +20,6 @@ const SaveModal = (props) => {
 	};
 
 	const addHighlight = (highlight, index) => {
-		console.log(highlight);
 		if (approvedIndexes.indexOf(index) === -1) {
 			setApprovedIndexes((approvedIndexes) => [...approvedIndexes, index]);
 			setApprovedHighlights((approvedHighlights) => [

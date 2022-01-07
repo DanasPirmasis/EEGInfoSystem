@@ -185,7 +185,7 @@ const UpperToolbar = (props) => {
 					>
 						Help
 					</Button>
-					{!props.userData && (
+					{localStorage.getItem('token') === null && (
 						<Button
 							size='small'
 							variant='outlined'
@@ -196,7 +196,7 @@ const UpperToolbar = (props) => {
 							Login
 						</Button>
 					)}
-					{props.userData && (
+					{localStorage.getItem('token') !== null && (
 						<IconButton onClick={openSettings}>
 							<AccountCircleIcon
 								sx={{
@@ -207,7 +207,7 @@ const UpperToolbar = (props) => {
 							></AccountCircleIcon>
 						</IconButton>
 					)}
-					{props.userData && (
+					{localStorage.getItem('token') !== null && (
 						<Button
 							size='small'
 							variant='outlined'

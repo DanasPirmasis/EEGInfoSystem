@@ -15,12 +15,10 @@ const App = () => {
 	const [saveSelected, setSaveSelected] = useState(false);
 	const [openSettings, setOpenSettings] = useState(false);
 	const [openLogin, setOpenLogin] = useState(false);
-	const [userData, setUserData] = useState();
 	const [highlights, setHighlights] = useState([]);
 
 	const loginHandler = (email, fileIds) => {
 		setSignalButtonClicked(false);
-		setUserData(email);
 	};
 
 	const loginHandlerOutside = (email, fileIds) => {
@@ -29,7 +27,6 @@ const App = () => {
 		setBrushSelected(false);
 		setHighlights([]);
 		setSignalButtonClicked(false);
-		setUserData(email);
 	};
 
 	const uploadHandler = (file) => {
@@ -95,7 +92,6 @@ const App = () => {
 							brushHandler={brushHandler}
 							saveHandler={saveHandler}
 							settingsHandler={settingsHandler}
-							userData={userData}
 							loginHandler={loginModalHandler}
 							uploadHandler={uploadHandlerWithFile}
 							edfFile={edfFile}
@@ -119,7 +115,6 @@ const App = () => {
 							brushHandler={brushHandler}
 							saveHandler={saveHandler}
 							settingsHandler={settingsHandler}
-							userData={userData}
 							loginHandler={loginModalHandler}
 							uploadHandler={uploadHandler}
 							edfFile={edfFile}
@@ -136,7 +131,6 @@ const App = () => {
 			<SettingsModal
 				open={openSettings}
 				settingsHandler={settingsHandler}
-				userData={userData}
 				uploadHandler={uploadHandler}
 				setHighlights={highlightHandler}
 			/>

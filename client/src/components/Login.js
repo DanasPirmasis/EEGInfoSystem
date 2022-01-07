@@ -29,6 +29,7 @@ const Login = (props) => {
 			});
 
 			localStorage.setItem('token', data.token);
+			localStorage.setItem('email', emailRef.current.value);
 			props.loginHandler(emailRef.current.value, data.fileIds);
 			navigate('/Reader');
 		} catch (error) {
@@ -53,6 +54,7 @@ const Login = (props) => {
 				});
 
 				localStorage.setItem('token', data.token);
+				localStorage.setItem('email', emailRef.current.value);
 				props.loginHandler(emailRef.current.value, []);
 				navigate('/Reader');
 			} catch (error) {
