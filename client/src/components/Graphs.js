@@ -162,7 +162,7 @@ const Reader = (props) => {
 
 		setHighlightedZones(tempZones);
 
-		let email = props.userData;
+		let email = localStorage.getItem('email');
 		let fileId = params.id;
 
 		if (!fileId && email) {
@@ -344,7 +344,7 @@ const Reader = (props) => {
 						))}
 					</Grid>
 				</Grid>
-				{selectedDataArray.length > 0 && (
+				{/* {selectedDataArray.length > 0 && (
 					<div
 						style={{
 							position: 'fixed',
@@ -363,7 +363,7 @@ const Reader = (props) => {
 							<TimeBar pos={tickPositions} val={time} />
 						</div>
 					</div>
-				)}
+				)} */}
 			</div>
 
 			<MontageModal open={openModal} handleClose={handleClose} signals={file} />
